@@ -20,7 +20,8 @@ public class AuthInterceptor implements HandlerInterceptor {
                 requestURI.startsWith("/login/google") ||
                 requestURI.startsWith("/process-oauth2") ||
                 requestURI.startsWith("/auth/register") ||
-                requestURI.startsWith("/table/order/")) {
+                requestURI.startsWith("/") ||
+                requestURI.startsWith("/products")) {
             return true;
         }
 

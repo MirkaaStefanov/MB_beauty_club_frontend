@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MB Beauty Club - Редактиране на продукт</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #EBE3D5;
+        color: #333;
+    }
+    .playfair {
+        font-family: 'Playfair Display', serif;
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden min-h-screen">
+
+<div th:insert="~{fragments/header :: main-header}"></div>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+  <div class="flex items-center space-x-4 mb-8">
+    <a th:href="@{/products}" class="flex items-center justify-center h-10 w-10 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+        <path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.612l4.158 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.612 9.25H16.25A.75.75 0 0 1 17 10Z" clip-rule="evenodd" />
+      </svg>
+    </a>
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair">Редактиране на продукт</h1>
+  </div>
+
+  <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto">
+    <form th:action="@{/products/edit/{id}(id=${product.id})}" th:object="${product}" method="post" enctype="multipart/form-data">
+      <input type="hidden" th:field="*{id}" />
+      <!-- Забележка: Премахната е скритата инпут за изображението, за да се избегнат големи заявки. -->
+
+      <div class="mb-6">
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Име</label>
+        <input type="text" id="name" th:field="*{name}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all" required>
+      </div>
+
+      <div class="mb-6">
+        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Описание</label>
+        <textarea id="description" th:field="*{description}" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all" required></textarea>
+      </div>
+
+      <div class="mb-6">
+        <label for="productCategory" class="block text-sm font-medium text-gray-700 mb-2">Категория на продукт</label>
+        <select id="productCategory" th:field="*{productCategory}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all" required>
+          <option value="">Изберете категория</option>
+          <option th:each="category : ${T(com.example.MB_beauty_club_frontend.enums.ProductCategory).values()}"
+                  th:value="${category}" th:text="${category}"></option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Цена</label>
+          <input type="number" id="price" th:field="*{price}" step="0.01" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all" required>
+        </div>
+        <div>
+          <label for="availableQuantity" class="block text-sm font-medium text-gray-700 mb-2">Наличност</label>
+          <input type="number" id="availableQuantity" th:field="*{availableQuantity}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all" required>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label for="barcode" class="block text-sm font-medium text-gray-700 mb-2">Баркод</label>
+        <input type="text" id="barcode" th:field="*{barcode}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all">
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Текуща снимка</label>
+        <div class="flex items-center space-x-4">
+          <img th:if="${product.image != null and product.image.length() > 0}" th:src="'data:image/jpeg;base64,' + ${product.image}" alt="Product Image" class="h-24 w-24 object-cover rounded-md shadow-md">
+          <img th:unless="${product.image != null and product.image.length() > 0}" src="https://placehold.co/100x100/C5B099/333333?text=No+Image" alt="No Image" class="h-24 w-24 object-cover rounded-md shadow-md">
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label for="imageFile" class="block text-sm font-medium text-gray-700 mb-2">Нова снимка (не е задължителна)</label>
+        <input type="file" id="imageFile" name="imageFile" accept="image/*" class="w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-full file:border-0
+              file:text-sm file:font-semibold
+              file:bg-gray-800 file:text-white
+              hover:file:bg-gray-700"
+        />
+        <!-- Забележка: Проверката за размер на файла се извършва на клиентската страна.
+             За оптимална сигурност, уверете се, че се извършва и на сървърната страна. -->
+      </div>
+
+      <div id="error-message-box" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative mb-4 hidden" role="alert">
+        <span id="error-message" class="block sm:inline"></span>
+      </div>
+
+      <div id="image-preview-container" class="mt-4 flex flex-col items-center hidden">
+        <h3 class="text-sm font-medium text-gray-700 mb-2">Преглед на нова снимка</h3>
+        <img id="preview-image" class="h-48 w-48 object-cover rounded-xl shadow-md border-2 border-gray-300">
+        <p id="preview-file-name" class="mt-2 text-xs text-gray-500 truncate w-48"></p>
+      </div>
+
+      <div class="flex items-center mb-6">
+        <input type="checkbox" id="forSale" th:field="*{forSale}" class="h-4 w-4 text-gray-800 bg-gray-100 border-gray-300 rounded focus:ring-gray-800">
+        <label for="forSale" class="ml-2 block text-sm text-gray-900">Продава се</label>
+      </div>
+
+      <div class="flex justify-end">
+        <button type="submit" class="px-6 py-3 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors flex items-center space-x-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.652.662c-.593.148-1.12.18-1.574-.019A1.875 1.875 0 0 1 1 18.259V16.65a4.5 4.5 0 0 1 1.13-1.897l13.916-13.92Z" />
+          </svg>
+          <span>Запази промените</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const itemImageFileInput = document.getElementById('imageFile');
+      const imagePreviewContainer = document.getElementById('image-preview-container');
+      const previewImage = document.getElementById('preview-image');
+      const previewFileName = document.getElementById('preview-file-name');
+      const errorMessageBox = document.getElementById('error-message-box');
+      const errorMessage = document.getElementById('error-message');
+
+      if (itemImageFileInput) {
+          itemImageFileInput.addEventListener('change', function() {
+              const file = this.files[0];
+
+              errorMessageBox.style.display = 'none';
+
+              if (file) {
+                  const maxAllowedSizeInBytes = 15 * 1024 * 1024;
+
+                  if (file.size > maxAllowedSizeInBytes) {
+                      errorMessage.textContent = 'Файлът е твърде голям! Моля, изберете изображение по-малко от 15MB.';
+                      errorMessageBox.style.display = 'block';
+                      this.value = '';
+                      imagePreviewContainer.style.display = 'none';
+                      previewImage.src = '';
+                      previewFileName.textContent = '';
+                  } else {
+                      const reader = new FileReader();
+                      reader.onload = function(e) {
+                          previewImage.src = e.target.result;
+                          previewFileName.textContent = file.name;
+                          imagePreviewContainer.style.display = 'flex';
+                      };
+                      reader.readAsDataURL(file);
+                  }
+              } else {
+                  imagePreviewContainer.style.display = 'none';
+                  previewImage.src = '';
+                  previewFileName.textContent = '';
+              }
+          });
+      }
+  });
+</script>
+
+</body>
+</html>

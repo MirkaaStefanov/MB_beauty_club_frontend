@@ -1,9 +1,7 @@
 package com.example.MB_beauty_club_frontend.controllers;
 
-
-import com.example.MB_beauty_club_frontend.clients.MenuItemClient;
-import com.example.MB_beauty_club_frontend.dtos.MenuItemDTO;
-import com.example.MB_beauty_club_frontend.enums.MenuCategory;
+import com.example.MB_beauty_club_frontend.clients.ProductClient;
+import com.example.MB_beauty_club_frontend.dtos.ProductDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,126 +17,143 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/menu-item")
-public class MenuItemController {
-    private final MenuItemClient menuItemClient;
+@RequestMapping("/products")
+public class ProductController {
+
+    private final ProductClient productClient;
 
 
     @GetMapping
     public String getMenuItems(
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) Boolean available,
+            @RequestParam(required = false) Boolean forSale,
             Model model,
             HttpServletRequest request) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        if (userRole == null || !userRole.equals("ADMIN") ) {
+
+        if (userRole.equals("ADMIN")) {
+            List<ProductDTO> allForAdmin = productClient.getAllProducts(null, null, token);
+            model.addAttribute("products", allForAdmin);
+            return "Product/allADMIN";
+        }
+
+
+        // Fetch ALL menu items, filtering will happen on frontend
+        List<ProductDTO> allProducts = productClient.getAllProducts(true, null, token);
+        model.addAttribute("products", allProducts);
+        return "Product/all";
+
+    }
+
+    @GetMapping("/create")
+    public String createMenuItem(
+            HttpServletRequest request, Model model) {
+
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String userRole = (String) request.getSession().getAttribute("sessionRole");
+
+        if (token == null || !userRole.equals("ADMIN")) {
             return "forward:/error";
         }
 
+        model.addAttribute("product", new ProductDTO());
 
-        List<MenuItemDTO> menuItems = new ArrayList<>();
-
-        try {
-            // Fetch ALL menu items, filtering will happen on frontend
-            menuItems = menuItemClient.getAllMenuItems(null, null, token);
-            model.addAttribute("allMenuItems", menuItems);
-        } catch (Exception e) {
-            log.error("Error fetching all menu items: {}", e.getMessage());
-            model.addAttribute("errorMessage", "Error loading menu items: " + e.getMessage());
-            model.addAttribute("allMenuItems", List.of()); // Provide empty list on error
-        }
-
-        // Add categories for the filter buttons and modal dropdown
-        model.addAttribute("menuCategoryEnumValues", MenuCategory.values());
-
-        model.addAttribute("createDTO", new MenuItemDTO());
-        model.addAttribute("updateDTO", new MenuItemDTO());
-
-        log.info("Loaded total menu items: {}", menuItems.size());
-        return "menu-item/list";
+        return "Product/form";
     }
 
 
-    @PostMapping
+    @PostMapping("/create")
     public String createMenuItem(
-            @ModelAttribute MenuItemDTO menuItemDTO,// Matches form input name
+            @ModelAttribute ProductDTO productDTO,// Matches form input name
             HttpServletRequest request,
             RedirectAttributes redirectAttributes) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
 
         try {
-            if (menuItemDTO.getImageFile() != null && !menuItemDTO.getImageFile().isEmpty()) {
-                byte[] fileBytes = menuItemDTO.getImageFile().getBytes();
+            if (productDTO.getImageFile() != null && !productDTO.getImageFile().isEmpty()) {
+                byte[] fileBytes = productDTO.getImageFile().getBytes();
                 String encodedImage = Base64.getEncoder().encodeToString(fileBytes);
-                menuItemDTO.setImage(encodedImage);
-            } else if (menuItemDTO.getImage() != null && !menuItemDTO.getImage().isEmpty()) {
+                productDTO.setImage(encodedImage);
+            } else if (productDTO.getImage() != null && !productDTO.getImage().isEmpty()) {
 
             } else {
-                menuItemDTO.setImage(null);
-                menuItemDTO.setImageFile(null);
+                productDTO.setImage(null);
+                productDTO.setImageFile(null);
             }
 
-            menuItemClient.create(menuItemDTO, token);
+            productClient.create(productDTO, token);
             redirectAttributes.addFlashAttribute("successMessage", "Menu item created successfully!");
         } catch (Exception e) {
             log.error("Error creating menu item: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to create menu item: " + e.getMessage());
         }
-        return "redirect:/menu-item";
+        return "redirect:/products";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String createMenuItem(@PathVariable Long id,
+            HttpServletRequest request, Model model) {
+
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String userRole = (String) request.getSession().getAttribute("sessionRole");
+
+        if (token == null || !userRole.equals("ADMIN")) {
+            return "forward:/error";
+        }
+        ProductDTO productDTO = productClient.getById(id, token);
+        model.addAttribute("product", productDTO);
+
+        return "Product/edit";
     }
 
     @PostMapping("/edit/{id}")
-    public String updateSubmit(@PathVariable Long id, @ModelAttribute MenuItemDTO menuItemDTO, HttpServletRequest request) throws IOException {
+    public String updateSubmit(@PathVariable Long id, @ModelAttribute ProductDTO productDTO, HttpServletRequest request) throws IOException {
         String token = (String) request.getSession().getAttribute("sessionToken");
 
-        MenuItemDTO existingMenuItem = menuItemClient.getById(id, token);
+        ProductDTO existingProduct = productClient.getById(id, token);
 
-        if (menuItemDTO.getImageFile() != null && !menuItemDTO.getImageFile().isEmpty()) {
-            byte[] fileBytes = menuItemDTO.getImageFile().getBytes();
+        if (productDTO.getImageFile() != null && !productDTO.getImageFile().isEmpty()) {
+            byte[] fileBytes = productDTO.getImageFile().getBytes();
             String encodedImage = Base64.getEncoder().encodeToString(fileBytes);
-            menuItemDTO.setImage(encodedImage);
+            productDTO.setImage(encodedImage);
         } else {
 
-            menuItemDTO.setImage(existingMenuItem.getImage());
+            productDTO.setImage(existingProduct.getImage());
         }
 
-        menuItemClient.update(id, menuItemDTO, token);
-        return "redirect:/menu-item";
+        productClient.update(id, productDTO, token);
+        return "redirect:/products";
     }
 
-
-    // Handles fetching a single menu item for editing (via AJAX on frontend)
-    // This is still needed for the JS to populate the edit modal without a full page reload.
     @GetMapping("/{id}")
     @ResponseBody
-    public MenuItemDTO getMenuItemById(@PathVariable Long id, HttpServletRequest request) {
+    public ProductDTO getMenuItemById(@PathVariable Long id, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
-        return menuItemClient.getById(id, token);
+        return productClient.getById(id, token);
     }
 
-    // Handles deleting a menu item
+
     @PostMapping("/delete/{id}")
     public String deleteMenuItem(@PathVariable Long id, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         try {
-            menuItemClient.delete(id, token);
+            productClient.delete(id, token);
             redirectAttributes.addFlashAttribute("successMessage", "Menu item deleted successfully!");
         } catch (Exception e) {
             log.error("Error deleting menu item with ID {}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete menu item: " + e.getMessage());
         }
-        return "redirect:/menu-item";
+        return "redirect:/products";
     }
 
 
@@ -146,13 +161,12 @@ public class MenuItemController {
     public String toggleAvailability(@PathVariable Long id, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         try {
-            menuItemClient.toggleAvailability(id, token);
+            productClient.toggleAvailability(id, token);
             redirectAttributes.addFlashAttribute("successMessage", "Menu item availability toggled!");
         } catch (Exception e) {
             log.error("Error toggling availability for menu item ID {}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to toggle availability: " + e.getMessage());
         }
-        return "redirect:/menu-item";
+        return "redirect:/products";
     }
 }
-
