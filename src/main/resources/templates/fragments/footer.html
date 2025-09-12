@@ -1,0 +1,13 @@
+<footer th:fragment="main-footer" class="bg-gray-800 text-gray-300 py-10 sm:py-12">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="mb-4">
+      <a href="#" class="text-2xl font-bold playfair text-white hover:text-gray-400 transition-colors">MB Beauty Club</a>
+    </div>
+    <p class="text-sm">&copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2024</span> MB Beauty Club. All rights reserved.</p>
+    <div class="mt-4 flex justify-center space-x-4 text-gray-400">
+      <a href="#" class="hover:text-white transition-colors">Facebook</a>
+      <a href="#" class="hover:text-white transition-colors">Instagram</a>
+      <a href="#" class="hover:text-white transition-colors">TikTok</a>
+    </div>
+  </div>
+</footer>

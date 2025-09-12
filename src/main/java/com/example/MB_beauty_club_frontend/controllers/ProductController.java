@@ -39,19 +39,17 @@ public class ProductController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-
-        if (userRole.equals("ADMIN")) {
+        // Проверете дали userRole е "ADMIN", като използвате стринг-литерала за извикване на equals()
+        if ("ADMIN".equals(userRole)) {
             List<ProductDTO> allForAdmin = productClient.getAllProducts(null, null, token);
             model.addAttribute("products", allForAdmin);
             return "Product/allADMIN";
         }
 
-
-        // Fetch ALL menu items, filtering will happen on frontend
+        // Изтеглете всички продукти, които са за продажба
         List<ProductDTO> allProducts = productClient.getAllProducts(true, null, token);
         model.addAttribute("products", allProducts);
         return "Product/all";
-
     }
 
     @GetMapping("/create")
