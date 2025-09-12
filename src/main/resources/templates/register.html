@@ -1,86 +1,78 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Регистрация</title>
-  <link rel="stylesheet" th:href="@{/css/main.css}">
-  <link rel="icon" type="image/x-icon" th:href="@{/img/photos/noImage.png}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>MB Beauty Club - Регистрация</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #EBE3D5; /* Main site background color */
+        color: #333;
+    }
+    .playfair {
+        font-family: 'Playfair Display', serif;
+    }
+  </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-lg">
+  <div class="bg-white p-8 sm:p-12 rounded-xl shadow-2xl">
+    <h1 class="text-4xl sm:text-5xl font-bold playfair text-center text-gray-800 mb-8">Регистрация</h1>
 
-<!--<div th:replace="~{fragments/sidebar :: main-sidebar}"></div>-->
+    <form th:action="@{/auth/register}" method="post" th:object="${registerRequest}" class="space-y-6" onsubmit="return validatePasswords();">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Имейл</label>
+        <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all" th:field="*{email}" required>
+      </div>
 
-<div class="main-content">
-  <div class="form-page-wrapper">
-    <div class="form-page-container">
-      <h1 class="form-page-title">Регистрация</h1>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Парола</label>
+        <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all" th:field="*{password}" required>
+      </div>
 
-      <form th:action="@{/auth/register}" method="post" th:object="${registerRequest}" class="styled-form" onsubmit="return validatePasswords();">
-        <div class="form-group">
-          <label for="email" class="form-label">Имейл</label>
-          <input type="email" id="email" class="form-control" th:field="*{email}" required>
-        </div>
+      <div>
+        <label for="repeatPassword" class="block text-sm font-medium text-gray-700 mb-1">Повтори парола</label>
+        <input type="password" id="repeatPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all" required>
+        <div id="password-error-message" class="text-red-600 text-sm mt-2 hidden"></div>
+      </div>
 
-        <div class="form-group">
-          <label for="password" class="form-label">Парола</label>
-          <input type="password" id="password" class="form-control" th:field="*{password}" required>
-        </div>
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Име</label>
+        <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all" th:field="*{name}" required>
+      </div>
 
-        <div class="form-group">
-          <label for="repeatPassword" class="form-label">Повтори парола</label>
-          <input type="password" id="repeatPassword" class="form-control" required>
-        </div>
-        <div id="password-error-message" class="form-error-message"></div>
+      <div>
+        <label for="surName" class="block text-sm font-medium text-gray-700 mb-1">Фамилия</label>
+        <input type="text" id="surName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all" th:field="*{surName}" required>
+      </div>
 
-
-        <div class="form-group">
-          <label for="name" class="form-label">Име</label>
-          <input type="text" id="name" class="form-control" th:field="*{name}" required>
-        </div>
-
-        <div class="form-group">
-          <label for="surName" class="form-label">Фамилия</label>
-          <input type="text" id="surName" class="form-control" th:field="*{surName}" required>
-        </div>
-
-        <div class="form-group">
-          <button type="submit" class="btn-form-submit">Регистрация</button>
-        </div>
-      </form>
-    </div>
+      <div>
+        <button type="submit" class="w-full px-6 py-3 bg-gray-800 text-white rounded-full font-semibold hover:bg-gray-700 transition-colors">Регистрация</button>
+      </div>
+    </form>
   </div>
 </div>
 
 <script>
   function validatePasswords() {
-   const password = document.getElementById("password").value;
-   const confirmPassword = document.getElementById("repeatPassword").value;
-   const errorMessage = document.getElementById("password-error-message");
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("repeatPassword").value;
+      const errorMessage = document.getElementById("password-error-message");
 
-   if (password !== confirmPassword) {
-       errorMessage.textContent = "Паролите не съвпадат!";
-       errorMessage.style.display = 'block';
-       return false;
-   }
-   errorMessage.textContent = "";
-   errorMessage.style.display = 'none';
-   return true;
-}
-
-    // Sidebar Toggle Function (copy this into every page that uses the sidebar)
-    function toggleSidebar() {
-        const sidebar = document.querySelector('.sidebar');
-        sidebar.classList.toggle('collapsed');
-
-        // Optional: for mobile responsiveness, if you have an overlay
-        // if (window.innerWidth <= 768) {
-        //     sidebar.classList.toggle('expanded'); // For mobile specific show/hide
-        // }
-    }
+      if (password !== confirmPassword) {
+          errorMessage.textContent = "Паролите не съвпадат!";
+          errorMessage.classList.remove('hidden');
+          return false;
+      }
+      errorMessage.textContent = "";
+      errorMessage.classList.add('hidden');
+      return true;
+  }
 </script>
-
 </body>
 </html>
