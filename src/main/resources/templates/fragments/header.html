@@ -1,39 +1,82 @@
 <!DOCTYPE html>
-<html lang="bg" xmlns:th="[http://www.thymeleaf.org](http://www.thymeleaf.org)">
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Header Fragment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .playfair {
+        font-family: 'Playfair Display', serif;
+    }
+    .header-link {
+        position: relative;
+        text-decoration: none;
+    }
+    .header-link::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        transform: scaleX(0);
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: #333;
+        transform-origin: bottom right;
+        transition: transform 0.25s ease-out;
+    }
+    .header-link:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Header Section to be included as a fragment -->
 <header th:fragment="main-header" class="absolute top-0 left-0 right-0 z-50 p-4 sm:p-6 lg:p-8">
   <nav class="container mx-auto flex items-center justify-between">
     <a th:href="@{/}" class="text-2xl sm:text-3xl font-bold playfair text-gray-800 drop-shadow-md">MB Beauty Club</a>
     <div class="hidden md:flex items-center space-x-6 lg:space-x-10 text-gray-800 font-medium">
-      <a th:href="@{/}" class="hover:text-gray-500 transition-colors">Home</a>
-      <a th:href="@{/#services}" class="hover:text-gray-500 transition-colors">Services</a>
-      <a th:href="@{/#products}" class="hover:text-gray-500 transition-colors">Products</a>
-      <a href="/products" class="hover:text-gray-500 transition-colors">Продукти</a>
+      <a th:href="@{/}" class="header-link hover:text-gray-500 transition-colors font-bold">Home</a>
+      <a th:href="@{/#services}" class="header-link hover:text-gray-500 transition-colors font-bold">Services</a>
+      <a th:href="@{/#products}" class="header-link hover:text-gray-500 transition-colors font-bold">Products</a>
+      <a href="/products" class="header-link hover:text-gray-500 transition-colors font-bold">Продукти</a>
       <th:block th:if="${session.sessionToken != null}">
-        <a href="/auth/logout" class="hover:text-gray-500 transition-colors">Излез</a>
+        <a href="/shopping-cart" class="header-link hover:text-gray-500 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 inline-block">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
+          </svg>
+        </a>
+      </th:block>
+      <th:block th:if="${session.sessionToken != null}">
+        <a href="/auth/logout" class="bg-gray-800 text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-700 transition-colors">Излез</a>
       </th:block>
       <th:block th:if="${session.sessionToken == null}">
         <a th:href="@{/auth/login}" class="bg-gray-800 text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-700 transition-colors">Впиши се</a>
       </th:block>
     </div>
-    <button id="mobile-menu-button" class="md:hidden text-gray-800 focus:outline-none">
-      <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-      </svg>
-    </button>
+    <div class="md:hidden flex items-center space-x-4">
+      <th:block th:if="${session.sessionToken != null}">
+        <a href="/shopping-cart">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-800">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
+          </svg>
+        </a>
+      </th:block>
+      <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+    </div>
   </nav>
 
-  <!-- Mobile Menu -->
   <div id="mobile-menu" class="hidden fixed top-0 left-0 w-full h-screen bg-white bg-opacity-95 flex flex-col items-center justify-center space-y-8 z-50 transition-transform duration-500 ease-in-out">
     <button id="close-menu-button" class="absolute top-6 right-6 text-gray-800 focus:outline-none">
-      <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
@@ -41,9 +84,8 @@
     <a th:href="@{/#services}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Services</a>
     <a th:href="@{/#products}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Products</a>
     <a href="/products" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
-
     <th:block th:if="${session.sessionToken != null}">
-      <a href="/auth/logout" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Излез</a>
+      <a href="/auth/logout" class="mt-8 px-8 py-3 bg-gray-800 text-white text-lg rounded-full font-semibold hover:bg-gray-700 transition-colors">Излез</a>
     </th:block>
     <th:block th:if="${session.sessionToken == null}">
       <a th:href="@{/auth/login}" class="mt-8 px-8 py-3 bg-gray-800 text-white text-lg rounded-full font-semibold hover:bg-gray-700 transition-colors">Впиши се</a>

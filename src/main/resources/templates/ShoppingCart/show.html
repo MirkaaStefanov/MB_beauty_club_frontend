@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Количка</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #EBE3D5;
+            color: #333;
+        }
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        .cart-item-card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .cart-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        /* New custom colors for luxury feel */
+        .bg-brown-400 { background-color: #8B4513; }
+        .hover\:bg-brown-500:hover { background-color: #A0522D; }
+        /* The delete link style */
+        .delete-link {
+            color: #EF4444; /* Tailwind red-500 */
+            text-decoration: none;
+            font-size: 0.875rem; /* text-sm */
+            transition: color 0.2s ease-in-out;
+        }
+        .delete-link:hover {
+            color: #DC2626; /* Tailwind red-600 */
+            text-decoration: underline;
+        }
+        /* Utility class to hide the button */
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<div th:insert="~{fragments/header :: main-header}"></div>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-800 mb-8 playfair">Моята Количка</h1>
+
+        <div th:if="${#lists.isEmpty(cartItems)}" class="text-center text-gray-500 py-10">
+            Вашата количка е празна.
+        </div>
+        <div th:unless="${#lists.isEmpty(cartItems)}" class="space-y-6">
+            <div th:each="cartItem : ${cartItems}" class="cart-item-card flex flex-col md:flex-row items-center bg-gray-50 rounded-lg p-6">
+                <div class="flex-shrink-0 w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center mb-4 md:mb-0 md:mr-6">
+                    <img th:if="${cartItem.product.image != null and cartItem.product.image.length() > 0}"
+                         th:src="'data:image/jpeg;base64,' + ${cartItem.product.image}"
+                         th:alt="${cartItem.product.name}"
+                         class="w-full h-48 object-cover">
+                    <img th:unless="${cartItem.product.image != null and cartItem.product.image.length() > 0}"
+                         src="https://placehold.co/600x600/C5B099/333333?text=No+Image"
+                         th:alt="${product.name}"
+                         class="w-full h-48 object-cover">
+                </div>
+                <div class="flex-grow text-center md:text-left">
+                    <h2 class="text-xl font-semibold text-gray-800" th:text="${cartItem.product.name}">Product Name</h2>
+                    <p class="text-gray-600 mt-1">Количество: <span th:text="${cartItem.quantity}">1</span></p>
+                </div>
+                <div class="mt-4 md:mt-0 md:ml-auto text-center md:text-right">
+                    <div class="text-lg font-bold text-gray-900" th:with="subtotalLeva=${cartItem.product.price * cartItem.quantity}">
+                        Обща цена: <span th:text="${#numbers.formatDecimal(subtotalLeva, 0, 2)}">10.00</span> лв
+                    </div>
+                    <div class="text-sm text-gray-500" th:with="subtotalEuro=${cartItem.product.euroPrice * cartItem.quantity}">
+                        (~<span th:text="${#numbers.formatDecimal(subtotalEuro, 0, 2)}">5.11</span> €)
+                    </div>
+                    <div class="mt-2 text-sm text-gray-500">
+                        Цена на брой: <span th:text="${#numbers.formatDecimal(cartItem.product.price, 0, 2)}">10.00</span> лв
+                        (~<span th:text="${#numbers.formatDecimal(cartItem.product.euroPrice, 0, 2)}">5.11</span> €)
+                    </div>
+                </div>
+
+                <div class="mt-4 md:mt-0 md:ml-6 flex flex-col items-center space-y-2"> <form th:action="@{/shopping-cart/update}" method="post" class="flex items-center space-x-2 update-form">
+                    <input type="hidden" name="cartItemId" th:value="${cartItem.id}">
+                    <div class="flex items-center">
+                        <button type="button" class="quantity-btn p-2 border rounded-l-md hover:bg-gray-100" data-action="decrement" th:data-item-id="${cartItem.id}">-</button>
+                        <input type="text" name="quantity" th:value="${cartItem.quantity}" min="1" readonly class="w-12 px-2 py-1 text-center border-t border-b border-gray-300 cart-quantity-input" th:data-original-quantity="${cartItem.quantity}">
+                        <button type="button" class="quantity-btn p-2 border rounded-r-md hover:bg-gray-100" data-action="increment" th:data-item-id="${cartItem.id}">+</button>
+                    </div>
+                    <button type="button" class="update-button px-4 py-2 text-white bg-brown-400 rounded-full hover:bg-brown-500 transition-colors duration-300 shadow-md hidden">
+                        Обнови
+                    </button>
+                </form>
+
+                    <form th:action="@{/shopping-cart/remove/{id}(id=${cartItem.id})}" method="post">
+                        <button type="submit" class="delete-link">
+                            Изтрий
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(cartItems)}" class="border-t-2 border-gray-200 mt-8 pt-6">
+            <div class="flex justify-between items-center text-xl font-bold text-gray-800">
+                <span class="text-2xl">Общо:</span>
+                <div class="text-right">
+                    <span th:text="${#numbers.formatDecimal(totalLeva, 0, 2)}" class="text-2xl font-bold">100.00</span> лв
+                    <div class="text-sm font-normal text-gray-500">
+                        (~<span th:text="${#numbers.formatDecimal(totalEuro, 0, 2)}">51.13</span> €)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-center mt-8 space-y-4 md:space-y-0 md:space-x-4">
+            <a href="/products" class="w-full md:w-auto px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-200 transition-colors duration-200 text-center font-medium">
+                Продължи с пазаруването
+            </a>
+            <a href="/checkout" class="w-full md:w-auto px-6 py-3 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition-colors duration-200 text-center font-medium">
+                Приключване на поръчката
+            </a>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{fragments/footer :: main-footer}"></footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityInputs = document.querySelectorAll('.cart-quantity-input');
+        const quantityButtons = document.querySelectorAll('.quantity-btn');
+        const updateButtons = document.querySelectorAll('.update-button');
+
+        quantityButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('form');
+                const input = form.querySelector('.cart-quantity-input');
+                let currentQuantity = parseInt(input.value);
+                const originalQuantity = parseInt(input.dataset.originalQuantity);
+
+                if (this.dataset.action === 'decrement') {
+                    if (currentQuantity > 1) {
+                        currentQuantity--;
+                    }
+                } else if (this.dataset.action === 'increment') {
+                    currentQuantity++;
+                }
+
+                input.value = currentQuantity;
+
+                const updateButton = form.querySelector('.update-button');
+
+                if (currentQuantity !== originalQuantity) {
+                    updateButton.classList.remove('hidden');
+                } else {
+                    updateButton.classList.add('hidden');
+                }
+            });
+        });
+
+        updateButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('form');
+                form.submit();
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
