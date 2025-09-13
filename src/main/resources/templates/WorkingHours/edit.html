@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MB Beauty Club - Редактиране на работно време</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #EBE3D5;
+        color: #333;
+    }
+    .playfair {
+        font-family: 'Playfair Display', serif;
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden min-h-screen">
+
+<div th:insert="~{fragments/header :: main-header}"></div>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+  <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-4 sm:mb-0">Редактиране на работно време</h1>
+    <a th:href="@{/working-hours}" class="inline-flex items-center space-x-2 px-6 py-3 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.5 1.5 0 0 1 0-.636M12.036 12.322a1.5 1.5 0 0 1 0-.636m-9.036.636l-.39-.195a.75.75 0 0 1 0-1.35l.39-.195m9.036.636l-.39-.195a.75.75 0 0 1 0-1.35l.39-.195m-9.036-.636L.266 9.397a.75.75 0 0 1 0-1.35l1.646-.823a.75.75 0 0 1 .521-.05l.39.195m9.036-.636L12.266 9.397a.75.75 0 0 1 0-1.35l1.646-.823a.75.75 0 0 1 .521-.05l.39.195M21.036 12.322l-1.646.823a.75.75 0 0 1-.521.05l-.39-.195m-9.036-.636l1.646.823a.75.75 0 0 1 .521.05l.39-.195" />
+      </svg>
+      <span>Преглед</span>
+    </a>
+  </div>
+
+  <div th:if="${param.success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+    <span class="block sm:inline">Работното време е актуализирано успешно!</span>
+  </div>
+
+  <!-- Container for validation errors -->
+  <div id="validation-error-container" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6 hidden" role="alert">
+    <span id="validation-error-message" class="block sm:inline"></span>
+  </div>
+
+  <form th:action="@{/working-hours/edit}" method="post" th:object="${workingHoursWrapper}" onsubmit="return validateAndSubmitForm(event)">
+    <div class="overflow-x-auto bg-white p-6 rounded-xl shadow-lg">
+      <table class="min-w-full divide-y divide-gray-200" id="workingHoursTable">
+        <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Ден
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Начален час
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Краен час
+          </th>
+          <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Действия
+          </th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr th:each="hour, stat : *{workingHours}">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+            <input type="hidden" th:field="*{workingHours[__${stat.index}__].dayOfWeek}" />
+            <span th:text="${hour.dayOfWeek}"></span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <input type="time" th:field="*{workingHours[__${stat.index}__].startTime}" class="px-3 py-2 border border-gray-300 rounded-md">
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <input type="time" th:field="*{workingHours[__${stat.index}__].endTime}" class="px-3 py-2 border border-gray-300 rounded-md">
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button type="button" class="text-red-600 hover:text-red-900" th:onclick="'clearWorkingHours(this)'">Изтрий</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-8 flex justify-end items-center">
+      <button type="submit" class="inline-flex items-center space-x-2 px-6 py-3 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors">
+        <span>Запази промените</span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      </button>
+    </div>
+  </form>
+</div>
+
+<div th:insert="~{fragments/footer :: main-footer}"></div>
+
+<script>
+  /**
+   * Clears the start and end time inputs for a given row.
+   * This effectively marks the day as non-working when the form is submitted.
+   * @param {HTMLButtonElement} button The delete button element.
+   */
+  function clearWorkingHours(button) {
+      const row = button.closest('tr');
+      const startTimeInput = row.querySelector('input[type="time"][name$=".startTime"]');
+      const endTimeInput = row.querySelector('input[type="time"][name$=".endTime"]');
+
+      if (startTimeInput) startTimeInput.value = '';
+      if (endTimeInput) endTimeInput.value = '';
+  }
+
+  /**
+   * Validates the form before submission.
+   * Checks if the end time is after the start time for each entry.
+   * @param {Event} event The form submission event.
+   * @returns {boolean} True if the form is valid and should be submitted, false otherwise.
+   */
+  function validateAndSubmitForm(event) {
+      const tableBody = document.getElementById('workingHoursTable').getElementsByTagName('tbody')[0];
+      const rows = tableBody.rows;
+      const errorContainer = document.getElementById('validation-error-container');
+      const errorMessage = document.getElementById('validation-error-message');
+
+      // Hide previous errors
+      errorContainer.classList.add('hidden');
+      errorMessage.textContent = '';
+
+      for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const startTimeInput = row.querySelector('input[type="time"][name$=".startTime"]');
+          const endTimeInput = row.querySelector('input[type="time"][name$=".endTime"]');
+
+          const startTime = startTimeInput.value;
+          const endTime = endTimeInput.value;
+
+          // Only validate if both fields are filled
+          if (startTime && endTime) {
+              if (startTime >= endTime) {
+                  errorMessage.textContent = 'Крайният час трябва да е след началния час за всички дни. Моля, коригирайте и опитайте отново.';
+                  errorContainer.classList.remove('hidden');
+                  return false; // Prevent form submission
+              }
+          }
+      }
+
+      return true; // Allow form submission
+  }
+</script>
+</body>
+</html>
