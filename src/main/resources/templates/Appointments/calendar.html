@@ -54,26 +54,39 @@
 
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
   <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-8 text-center">Избери час</h1>
-  <p class="text-lg text-center mb-12 text-gray-700" th:text="${'За дата: ' + currentDate}"></p>
+  <p class="text-lg text-center mb-12 text-gray-700" th:text="${'За дата: ' + #temporals.format(currentDate, 'dd MMMM yyyy')}"></p>
 
   <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
     <!-- Calendar Navigation -->
     <div class="flex justify-between items-center mb-4">
-      <a th:href="@{/appointments/calendar(workerId=${workerId}, date=${currentDate.minusDays(1)})}" class="p-2 rounded-full hover:bg-gray-200">
+      <!-- Навигация към предишен ден, деактивирана ако е текущата дата или по-рано -->
+      <a th:if="${currentDate.isAfter(today)}"
+         th:href="@{/appointments/calendar/{workerId}(workerId=${workerId}, serviceId=${serviceId}, date=${currentDate.minusDays(1)})}"
+         class="p-2 rounded-full hover:bg-gray-200">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
         </svg>
       </a>
+      <span th:unless="${currentDate.isAfter(today)}"
+            class="p-2 rounded-full text-gray-400 cursor-not-allowed">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </span>
       <span class="font-bold text-xl playfair" th:text="${#temporals.format(currentDate, 'dd MMMM yyyy')}"></span>
-      <a th:href="@{/appointments/calendar(workerId=${workerId}, date=${currentDate.plusDays(1)})}" class="p-2 rounded-full hover:bg-gray-200">
+      <a th:href="@{/appointments/calendar/{workerId}(workerId=${workerId}, serviceId=${serviceId}, date=${currentDate.plusDays(1)})}" class="p-2 rounded-full hover:bg-gray-200">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
       </a>
     </div>
 
+    <div th:if="${isNotAvailable}" class="text-center text-red-500 text-lg font-semibold my-8">
+      <p th:text="${notAvailableReason}"></p>
+    </div>
+
     <!-- Time slots grid -->
-    <div class="grid-container">
+    <div th:unless="${isNotAvailable}" class="grid-container">
       <div th:each="time : ${availableTimes}"
            th:classappend="${time.isBefore(#temporals.createNow().toLocalTime()) and currentDate.isEqual(#temporals.createNow().toLocalDate())} ? 'disabled' : ''"
            class="grid-item"
@@ -81,11 +94,16 @@
            onclick="selectTime(this)">
         <span th:text="${#temporals.format(time, 'HH:mm')}"></span>
       </div>
+      <div th:if="${#lists.isEmpty(availableTimes)}" class="col-span-3 text-center text-gray-500 p-8">
+        Няма свободни часове за тази дата.
+      </div>
     </div>
   </div>
 
-  <form id="bookForm" th:action="@{/appointments/book}" method="post">
-    <input type="hidden" name="workerId" th:value="${workerId}">
+  <form id="bookForm" th:action="@{/appointments/book}" th:object="${appointmentDTO}" method="post">
+    <!-- Изпращаме само ID-тата -->
+    <input type="hidden" name="worker.id" th:value="*{worker.id}">
+    <input type="hidden" name="service.id" th:value="*{service.id}">
     <input type="hidden" name="startTime" id="selectedStartTime">
     <div class="mt-6 text-center">
       <button type="submit" class="inline-flex items-center justify-center px-8 py-4 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" id="bookBtn" disabled>
@@ -100,6 +118,7 @@
 <script th:inline="javascript">
   /*<![CDATA[*/
   const workerId = /*[[${workerId}]]*/ null;
+  const serviceId = /*[[${serviceId}]]*/ null;
   const currentDate = /*[[${currentDate}]]*/ null;
 
   let selectedTimeElement = null;

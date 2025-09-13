@@ -38,7 +38,7 @@ public class WorkingHoursController {
             return "forward:/error";
         }
 
-        List<WorkingHoursDTO> existingHours = workingHoursClient.getWorkingHours(token);
+        List<WorkingHoursDTO> existingHours = workingHoursClient.getMyWorkingHours(token);
         Map<DayOfWeek, WorkingHoursDTO> existingHoursMap = existingHours.stream()
                 .collect(Collectors.toMap(WorkingHoursDTO::getDayOfWeek, dto -> dto));
 
@@ -66,7 +66,7 @@ public class WorkingHoursController {
             return "forward:/error";
         }
 
-        List<WorkingHoursDTO> existingHours = workingHoursClient.getWorkingHours(token);
+        List<WorkingHoursDTO> existingHours = workingHoursClient.getMyWorkingHours(token);
 
         Map<DayOfWeek, WorkingHoursDTO> existingHoursMap = existingHours.stream()
                 .collect(Collectors.toMap(WorkingHoursDTO::getDayOfWeek, dto -> dto));

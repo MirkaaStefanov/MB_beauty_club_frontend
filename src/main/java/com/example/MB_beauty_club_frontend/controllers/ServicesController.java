@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -87,6 +88,17 @@ public class ServicesController {
 
         serviceClient.deleteService(id, token);
         return "redirect:/services/edit";
+    }
+
+    @GetMapping("/{category}")
+    public String getByCategory(@PathVariable WorkerCategory category, Model model, HttpServletRequest request) {
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String userRole = (String) request.getSession().getAttribute("sessionRole");
+
+        List<ServiceDTO> servicesByCategory = serviceClient.getServicesByCategory(category,token);
+        model.addAttribute("allServices", servicesByCategory);
+
+        return "Services/showCategory";
     }
 }
 
