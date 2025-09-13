@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MB Beauty Club - Избери работник</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #EBE3D5;
+        color: #333;
+    }
+    .playfair {
+        font-family: 'Playfair Display', serif;
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden min-h-screen">
+
+<div th:insert="~{fragments/header :: main-header}"></div>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+  <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-8 text-center">Избери работник</h1>
+  <p class="text-lg text-center mb-12 text-gray-700" th:text="${'За категория: ' + category}"></p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div th:each="worker : ${workers}" class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center text-center">
+<!--      <img th:src="${worker.imageUrl}" alt="Worker Image" class="w-32 h-32 rounded-full object-cover mb-4 shadow-md">-->
+      <h2 class="text-2xl font-bold playfair mb-2" th:text="${worker.name}"></h2>
+<!--      <p class="text-sm text-gray-600 mb-4" th:text="${worker.description}"></p>-->
+        <a th:href="@{/appointments/calendar/{workerId}(workerId=${worker.id}, serviceId=${serviceId})}" class="inline-flex items-center justify-center px-6 py-3 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors mt-auto">
+            Избери
+        </a>
+    </div>
+  </div>
+</div>
+
+<div th:insert="~{fragments/footer :: main-footer}"></div>
+
+</body>
+</html>

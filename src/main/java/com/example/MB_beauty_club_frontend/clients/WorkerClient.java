@@ -34,4 +34,7 @@ public interface WorkerClient {
     @GetMapping("/{id}")
     WorkerDTO findById(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String auth);
 
+    @GetMapping("/byCategory")
+    List<WorkerDTO> getWorkersByCategory(@RequestParam("category") WorkerCategory category, @RequestHeader("Authorization") String auth);
+
 }

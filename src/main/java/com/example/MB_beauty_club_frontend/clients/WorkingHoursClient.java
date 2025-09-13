@@ -16,7 +16,10 @@ import java.util.List;
 public interface WorkingHoursClient {
 
     @GetMapping
-    List<WorkingHoursDTO> getWorkingHours(@RequestHeader("Authorization") String auth);
+    List<WorkingHoursDTO> getMyWorkingHours(@RequestHeader("Authorization") String auth);
+
+    @GetMapping("/{id}")
+    List<WorkingHoursDTO> getWorkingHoursByWorkerId(@PathVariable Long id, @RequestHeader("Authorization") String auth);
 
     @PutMapping
     void setWorkingHours(@RequestBody List<WorkingHoursDTO> newHours, @RequestHeader("Authorization") String auth);

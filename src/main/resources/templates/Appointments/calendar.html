@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MB Beauty Club - Запази час</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #EBE3D5;
+        color: #333;
+    }
+    .playfair {
+        font-family: 'Playfair Display', serif;
+    }
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        padding: 1rem;
+        background-color: #fff;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .grid-item {
+        padding: 1rem;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        transition: background-color 0.2s, color 0.2s;
+        cursor: pointer;
+    }
+    .grid-item:hover {
+        background-color: #e5e7eb;
+    }
+    .grid-item.selected {
+        background-color: #1f2937;
+        color: #fff;
+    }
+    .grid-item.disabled {
+        background-color: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden min-h-screen">
+
+<div th:insert="~{fragments/header :: main-header}"></div>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+  <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-8 text-center">Избери час</h1>
+  <p class="text-lg text-center mb-12 text-gray-700" th:text="${'За дата: ' + #temporals.format(currentDate, 'dd MMMM yyyy')}"></p>
+
+  <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+    <!-- Calendar Navigation -->
+    <div class="flex justify-between items-center mb-4">
+      <!-- Навигация към предишен ден, деактивирана ако е текущата дата или по-рано -->
+      <a th:if="${currentDate.isAfter(today)}"
+         th:href="@{/appointments/calendar/{workerId}(workerId=${workerId}, serviceId=${serviceId}, date=${currentDate.minusDays(1)})}"
+         class="p-2 rounded-full hover:bg-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </a>
+      <span th:unless="${currentDate.isAfter(today)}"
+            class="p-2 rounded-full text-gray-400 cursor-not-allowed">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </span>
+      <span class="font-bold text-xl playfair" th:text="${#temporals.format(currentDate, 'dd MMMM yyyy')}"></span>
+      <a th:href="@{/appointments/calendar/{workerId}(workerId=${workerId}, serviceId=${serviceId}, date=${currentDate.plusDays(1)})}" class="p-2 rounded-full hover:bg-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </a>
+    </div>
+
+    <div th:if="${isNotAvailable}" class="text-center text-red-500 text-lg font-semibold my-8">
+      <p th:text="${notAvailableReason}"></p>
+    </div>
+
+    <!-- Time slots grid -->
+    <div th:unless="${isNotAvailable}" class="grid-container">
+      <div th:each="time : ${availableTimes}"
+           th:classappend="${time.isBefore(#temporals.createNow().toLocalTime()) and currentDate.isEqual(#temporals.createNow().toLocalDate())} ? 'disabled' : ''"
+           class="grid-item"
+           th:data-time="${time}"
+           onclick="selectTime(this)">
+        <span th:text="${#temporals.format(time, 'HH:mm')}"></span>
+      </div>
+      <div th:if="${#lists.isEmpty(availableTimes)}" class="col-span-3 text-center text-gray-500 p-8">
+        Няма свободни часове за тази дата.
+      </div>
+    </div>
+  </div>
+
+  <form id="bookForm" th:action="@{/appointments/book}" th:object="${appointmentDTO}" method="post">
+    <!-- Изпращаме само ID-тата -->
+    <input type="hidden" name="worker.id" th:value="*{worker.id}">
+    <input type="hidden" name="service.id" th:value="*{service.id}">
+    <input type="hidden" name="startTime" id="selectedStartTime">
+    <div class="mt-6 text-center">
+      <button type="submit" class="inline-flex items-center justify-center px-8 py-4 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" id="bookBtn" disabled>
+        Запази час
+      </button>
+    </div>
+  </form>
+</div>
+
+<div th:insert="~{fragments/footer :: main-footer}"></div>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const workerId = /*[[${workerId}]]*/ null;
+  const serviceId = /*[[${serviceId}]]*/ null;
+  const currentDate = /*[[${currentDate}]]*/ null;
+
+  let selectedTimeElement = null;
+
+  function selectTime(element) {
+      if (element.classList.contains('disabled')) {
+          return;
+      }
+
+      if (selectedTimeElement) {
+          selectedTimeElement.classList.remove('selected');
+      }
+
+      selectedTimeElement = element;
+      selectedTimeElement.classList.add('selected');
+
+      const selectedTime = element.getAttribute('data-time');
+      const selectedDateTime = currentDate + 'T' + selectedTime;
+
+      document.getElementById('selectedStartTime').value = selectedDateTime;
+      document.getElementById('bookBtn').disabled = false;
+  }
+  /*]]>*/
+</script>
+
+</body>
+</html>
