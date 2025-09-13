@@ -40,11 +40,24 @@
   <nav class="container mx-auto flex items-center justify-between">
     <a th:href="@{/}" class="text-2xl sm:text-3xl font-bold playfair text-gray-800 drop-shadow-md">MB Beauty Club</a>
     <div class="hidden md:flex items-center space-x-6 lg:space-x-10 text-gray-800 font-medium">
-      <a th:href="@{/}" class="header-link hover:text-gray-500 transition-colors font-bold">Home</a>
-      <a th:href="@{/#services}" class="header-link hover:text-gray-500 transition-colors font-bold">Services</a>
-      <a th:href="@{/#products}" class="header-link hover:text-gray-500 transition-colors font-bold">Products</a>
-      <a href="/products" class="header-link hover:text-gray-500 transition-colors font-bold">Продукти</a>
-      <th:block th:if="${session.sessionToken != null}">
+
+      <th:block th:if="${session.sessionRole == 'USER' || session.sessionToken == null}">
+        <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Начало</a>
+        <a th:href="@{/#services}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
+        <a th:href="@{/#products}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
+      </th:block>
+      <th:block th:if="${session.sessionRole == 'ADMIN'}">
+        <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
+        <a th:href= "@{/users}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
+        <a th:href="@{/services}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
+        <a th:href="@{/workers}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Служители</a>
+      </th:block>
+      <th:block th:if="${session.sessionRole == 'WORKER'}">
+        <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Часове</a>
+        <a th:href="@{/working-hours}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Работно време</a>
+        <a th:href="@{/vacations}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Отпуски</a>
+      </th:block>
+      <th:block th:if="${session.sessionToken != null && session.sessionRole != 'WORKER'}">
         <a href="/shopping-cart" class="header-link hover:text-gray-500 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 inline-block">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
@@ -81,9 +94,13 @@
       </svg>
     </button>
     <a th:href="@{/}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Home</a>
-    <a th:href="@{/#services}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Services</a>
+    <th:block th:if="${session.sessionRole == 'USER' || session.sessionToken == null}">
+      <a th:href="@{/#services}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Services</a>
     <a th:href="@{/#products}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Products</a>
-    <a href="/products" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
+      </th:block>
+      <th:block th:if="${session.sessionRole == 'ADMIN'}">
+      <a th:href= "@{/users}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
+    </th:block>
     <th:block th:if="${session.sessionToken != null}">
       <a href="/auth/logout" class="mt-8 px-8 py-3 bg-gray-800 text-white text-lg rounded-full font-semibold hover:bg-gray-700 transition-colors">Излез</a>
     </th:block>

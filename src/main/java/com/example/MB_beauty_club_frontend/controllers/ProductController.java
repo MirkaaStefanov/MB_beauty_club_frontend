@@ -39,13 +39,11 @@ public class ProductController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        // Проверете дали userRole е "ADMIN", като използвате стринг-литерала за извикване на equals()
         if ("ADMIN".equals(userRole)) {
             List<ProductDTO> allForAdmin = productClient.getAllProducts(null, null, token);
             model.addAttribute("products", allForAdmin);
             return "Product/allADMIN";
         }
-
         // Изтеглете всички продукти, които са за продажба
         List<ProductDTO> allProducts = productClient.getAllProducts(true, null, token);
         model.addAttribute("products", allProducts);
@@ -76,7 +74,10 @@ public class ProductController {
             RedirectAttributes redirectAttributes) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
-
+        String role = (String) request.getSession().getAttribute("sessionRole");
+        if (!role.equals("ADMIN")){
+            return "forward:/error";
+        }
         try {
             if (productDTO.getImageFile() != null && !productDTO.getImageFile().isEmpty()) {
                 byte[] fileBytes = productDTO.getImageFile().getBytes();
@@ -117,6 +118,10 @@ public class ProductController {
     @PostMapping("/edit/{id}")
     public String updateSubmit(@PathVariable Long id, @ModelAttribute ProductDTO productDTO, HttpServletRequest request) throws IOException {
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+        if (!role.equals("ADMIN")){
+            return "forward:/error";
+        }
 
         ProductDTO existingProduct = productClient.getById(id, token);
 
@@ -144,6 +149,10 @@ public class ProductController {
     @PostMapping("/delete/{id}")
     public String deleteMenuItem(@PathVariable Long id, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+        if (!role.equals("ADMIN")){
+            return "forward:/error";
+        }
         try {
             productClient.delete(id, token);
             redirectAttributes.addFlashAttribute("successMessage", "Menu item deleted successfully!");
@@ -158,6 +167,10 @@ public class ProductController {
     @PostMapping("/toggle/{id}")
     public String toggleAvailability(@PathVariable Long id, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+        if (!role.equals("ADMIN")){
+            return "forward:/error";
+        }
         try {
             productClient.toggleAvailability(id, token);
             redirectAttributes.addFlashAttribute("successMessage", "Menu item availability toggled!");

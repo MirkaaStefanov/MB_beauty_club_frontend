@@ -1,6 +1,8 @@
 package com.example.MB_beauty_club_frontend.controllers;
 
+import com.example.MB_beauty_club_frontend.clients.AppointmentClient;
 import com.example.MB_beauty_club_frontend.clients.ProductClient;
+import com.example.MB_beauty_club_frontend.dtos.AppointmentDTO;
 import com.example.MB_beauty_club_frontend.dtos.ProductDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +20,20 @@ import java.util.stream.Collectors;
 public class HomeController {
 
     private final ProductClient productClient;
+    private final AppointmentClient appointmentClient;
 
     @GetMapping("/")
     public String homePage(Model model, HttpServletRequest request){
 
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
 
+        if ("ADMIN".equals(role)){
+            return "redirect:/products";
+        }
+        if ("WORKER".equals(role)){
+            return "redirect:/appointments/my-appointments";
+        }
         List<ProductDTO> allProducts = productClient.getAllProducts(true, null, token);
 
         // Вземете само първите 3 продукта, които са налични за продажба
@@ -35,6 +45,4 @@ public class HomeController {
 
         return "index";
     }
-
-
 }
