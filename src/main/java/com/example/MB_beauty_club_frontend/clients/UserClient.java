@@ -15,7 +15,7 @@ public interface UserClient {
     PublicUserDTO getMe(@RequestHeader("Authorization") String auth);
 
     @GetMapping("/all")
-    List<PublicUserDTO> getAllUsers();
+    List<PublicUserDTO> getAllUsers(@RequestHeader("Authorization") String auth);
 
 
 }
