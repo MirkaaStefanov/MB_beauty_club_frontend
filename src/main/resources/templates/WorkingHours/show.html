@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MB Beauty Club - Работно време</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #EBE3D5;
+        color: #333;
+    }
+    .playfair {
+        font-family: 'Playfair Display', serif;
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden min-h-screen">
+
+<div th:insert="~{fragments/header :: main-header}"></div>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+  <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-4 sm:mb-0">Моето работно време</h1>
+    <a th:href="@{/working-hours/edit}" class="inline-flex items-center space-x-2 px-6 py-3 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.652.662c-.593.148-1.12.18-1.574-.019A1.875 1.875 0 0 1 1 18.259V16.65a4.5 4.5 0 0 1 1.13-1.897l13.916-13.92Z" />
+      </svg>
+      <span>Редактирай</span>
+    </a>
+  </div>
+
+  <div class="overflow-x-auto bg-white p-6 rounded-xl shadow-lg">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+      <tr>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Ден
+        </th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Работно време
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Действия
+        </th>
+      </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+      <tr th:each="hours : ${workingHours}">
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${hours.dayOfWeek.toString()}"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <span th:if="${hours.startTime != null and hours.endTime != null}" th:text="${hours.startTime + ' - ' + hours.endTime}"></span>
+          <span th:unless="${hours.startTime != null and hours.endTime != null}" class="font-bold text-red-600">Неработен</span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+          <form th:if="${hours.id != null}" th:action="@{/working-hours/{id}(id=${hours.id})}" method="post">
+            <button type="submit" class="text-red-600 hover:text-red-900 font-semibold">
+              Маркирай неработен
+            </button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div th:insert="~{fragments/footer :: main-footer}"></div>
+
+</body>
+</html>
