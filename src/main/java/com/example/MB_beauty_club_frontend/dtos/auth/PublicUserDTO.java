@@ -4,6 +4,7 @@ package com.example.MB_beauty_club_frontend.dtos.auth;
 import com.example.MB_beauty_club_frontend.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class PublicUserDTO {
     private UUID id;
     private String name;

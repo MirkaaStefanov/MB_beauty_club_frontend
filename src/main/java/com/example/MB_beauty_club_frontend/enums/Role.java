@@ -14,9 +14,7 @@ public enum Role {
 
     USER,
     ADMIN,
-    WAITER,
-    COOKER,
-    BARMAN
+    WORKER
 
 }
 
