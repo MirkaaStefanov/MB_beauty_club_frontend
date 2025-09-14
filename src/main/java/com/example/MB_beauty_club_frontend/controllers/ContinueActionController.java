@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -50,8 +51,8 @@ public class ContinueActionController {
                 appointmentDTO.setWorker(new WorkerDTO());
                 appointmentDTO.setService(new ServiceDTO());
 
-                appointmentDTO.getWorker().setId(Long.valueOf(params.get("worker.id")[0]));
-                appointmentDTO.getService().setId(Long.valueOf(params.get("service.id")[0]));
+                appointmentDTO.getWorker().setId(UUID.fromString(params.get("worker.id")[0]));
+                appointmentDTO.getService().setId(UUID.fromString(params.get("service.id")[0]));
                 appointmentDTO.setStartTime(LocalDateTime.parse(params.get("startTime")[0]));
 
 

@@ -26,13 +26,13 @@ public interface WorkerClient {
     List<WorkerDTO> all(@RequestHeader(value = "Authorization", required = false) String auth);
 
     @PutMapping
-    WorkerDTO update(@RequestParam Long id, @RequestBody WorkerDTO workerDTO, @RequestHeader(value = "Authorization", required = false) String auth);
+    WorkerDTO update(@RequestParam UUID id, @RequestBody WorkerDTO workerDTO, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @PostMapping("/delete")
-    void delete(@RequestParam Long id, @RequestHeader(value = "Authorization", required = false) String auth);
+    void delete(@RequestParam UUID id, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @GetMapping("/{id}")
-    WorkerDTO findById(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String auth);
+    WorkerDTO findById(@PathVariable UUID id, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @GetMapping("/byCategory")
     List<WorkerDTO> getWorkersByCategory(@RequestParam("category") WorkerCategory category, @RequestHeader("Authorization") String auth);

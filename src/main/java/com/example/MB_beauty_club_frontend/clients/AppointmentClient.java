@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.UUID;
 
 @FeignClient(name = "MB-appointments", url = "${backend.base-url}/appointments")
 public interface AppointmentClient {
@@ -21,7 +22,7 @@ public interface AppointmentClient {
     List<AppointmentDTO> getMyAppointments(@RequestHeader("Authorization") String auth);
 
     @GetMapping("/worker-appointments/{id}")
-    List<AppointmentDTO> getWorkerAppointments(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String auth);
+    List<AppointmentDTO> getWorkerAppointments(@PathVariable UUID id, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @GetMapping("/pending-worker-appointments")
     List<AppointmentDTO> getPendingWorkerAppointments(@RequestHeader("Authorization") String auth);

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.UUID;
 
 @FeignClient(name = "MB-services", url = "${backend.base-url}/services")
 public interface ServiceClient {
@@ -23,7 +24,7 @@ public interface ServiceClient {
     List<ServiceDTO> getServicesByCategory(@RequestParam("category") WorkerCategory category, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @GetMapping("/byId")
-    ServiceDTO getServiceById(@RequestParam("id") Long id, @RequestHeader(value = "Authorization", required = false) String auth);
+    ServiceDTO getServiceById(@RequestParam("id") UUID id, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @PostMapping("/add")
     void addService(@RequestBody ServiceDTO serviceDTO, @RequestHeader("Authorization") String auth);
@@ -32,6 +33,6 @@ public interface ServiceClient {
     void updateService(@RequestBody ServiceDTO serviceDTO, @RequestHeader("Authorization") String auth);
 
     @PostMapping("/delete")
-    void deleteService(@RequestParam("id") Long id, @RequestHeader("Authorization") String auth);
+    void deleteService(@RequestParam("id") UUID id, @RequestHeader("Authorization") String auth);
 
 }

@@ -74,7 +74,7 @@ public class WorkerController {
     }
 
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable Long id, HttpServletRequest request, Model model) {
+    public String edit(@PathVariable UUID id, HttpServletRequest request, Model model) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
@@ -90,7 +90,7 @@ public class WorkerController {
     }
 
     @PostMapping("/edit/{id}")
-    public String edit(@PathVariable Long id, @ModelAttribute WorkerDTO workerDTO, HttpServletRequest request, Model model) {
+    public String edit(@PathVariable UUID id, @ModelAttribute WorkerDTO workerDTO, HttpServletRequest request, Model model) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
@@ -102,7 +102,7 @@ public class WorkerController {
         return "redirect:/workers";
     }
     @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Long id, HttpServletRequest request){
+    public String delete(@PathVariable UUID id, HttpServletRequest request){
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 

@@ -30,6 +30,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
@@ -46,7 +47,7 @@ public class AppointmentsController {
 
 
     @GetMapping("/select_worker/{id}")
-    public String showSelectWorkerForm(@PathVariable Long id,  Model model, HttpServletRequest request) {
+    public String showSelectWorkerForm(@PathVariable UUID id,  Model model, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
@@ -66,7 +67,7 @@ public class AppointmentsController {
     }
 
     @GetMapping("/calendar/{workerId}/{serviceId}")
-    public String showCalendar(@PathVariable Long workerId, @PathVariable Long serviceId, Model model, HttpServletRequest request, @RequestParam(name = "date", required = false) String dateStr) {
+    public String showCalendar(@PathVariable UUID workerId, @PathVariable UUID serviceId, Model model, HttpServletRequest request, @RequestParam(name = "date", required = false) String dateStr) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 

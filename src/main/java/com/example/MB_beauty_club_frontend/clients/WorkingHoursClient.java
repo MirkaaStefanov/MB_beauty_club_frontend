@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
+import java.util.UUID;
 
 @FeignClient(name = "MB-working-hours", url = "${backend.base-url}/working-hours")
 public interface WorkingHoursClient {
@@ -19,7 +20,7 @@ public interface WorkingHoursClient {
     List<WorkingHoursDTO> getMyWorkingHours(@RequestHeader("Authorization") String auth);
 
     @GetMapping("/{id}")
-    List<WorkingHoursDTO> getWorkingHoursByWorkerId(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String auth);
+    List<WorkingHoursDTO> getWorkingHoursByWorkerId(@PathVariable UUID id, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @PutMapping
     void setWorkingHours(@RequestBody List<WorkingHoursDTO> newHours, @RequestHeader("Authorization") String auth);

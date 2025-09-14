@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class ServicesController {
     }
 
     @GetMapping("/edit")
-    public String getServicesForm(Model model, HttpServletRequest request, @RequestParam(name = "id", required = false) Long id) {
+    public String getServicesForm(Model model, HttpServletRequest request, @RequestParam(name = "id", required = false) UUID id) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
@@ -78,7 +79,7 @@ public class ServicesController {
     }
 
     @PostMapping("/delete")
-    public String deleteService(@RequestParam("id") Long id, HttpServletRequest request) {
+    public String deleteService(@RequestParam("id") UUID id, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 

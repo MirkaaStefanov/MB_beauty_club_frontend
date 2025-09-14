@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
+import java.util.UUID;
 
 @FeignClient(name = "MB-vacations", url = "${backend.base-url}/vacations")
 public interface VacationsClient {
@@ -25,7 +26,7 @@ public interface VacationsClient {
     void deleteVacation(@PathVariable Long id, @RequestHeader("Authorization") String auth);
 
     @GetMapping("/{id}")
-    List<VacationDTO> getVacationsByWorkerId(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String auth);
+    List<VacationDTO> getVacationsByWorkerId(@PathVariable UUID id, @RequestHeader(value = "Authorization", required = false) String auth);
 
 
 }
