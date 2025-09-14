@@ -97,6 +97,7 @@ public class ServicesController {
 
         List<ServiceDTO> servicesByCategory = serviceClient.getServicesByCategory(category,token);
         model.addAttribute("allServices", servicesByCategory);
+        model.addAttribute("category", category);
 
         return "Services/showCategory";
     }

@@ -20,7 +20,7 @@ public interface ServiceClient {
     List<ServiceDTO> getAllServices(@RequestHeader("Authorization") String auth);
 
     @GetMapping("/byCategory")
-    List<ServiceDTO> getServicesByCategory(@RequestParam("category") WorkerCategory category, @RequestHeader("Authorization") String auth);
+    List<ServiceDTO> getServicesByCategory(@RequestParam("category") WorkerCategory category, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @GetMapping("/byId")
     ServiceDTO getServiceById(@RequestParam("id") Long id, @RequestHeader("Authorization") String auth);
