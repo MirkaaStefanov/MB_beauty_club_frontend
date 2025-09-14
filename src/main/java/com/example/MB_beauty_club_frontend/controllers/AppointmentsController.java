@@ -48,6 +48,11 @@ public class AppointmentsController {
     @GetMapping("/select_worker/{id}")
     public String showSelectWorkerForm(@PathVariable Long id,  Model model, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if(role != null || !role.equals("USER")){
+            return "redirect:/";
+        }
 
         ServiceDTO serviceDTO = serviceClient.getServiceById(id, token);
 
@@ -62,6 +67,11 @@ public class AppointmentsController {
     @GetMapping("/calendar/{workerId}/{serviceId}")
     public String showCalendar(@PathVariable Long workerId, @PathVariable Long serviceId, Model model, HttpServletRequest request, @RequestParam(name = "date", required = false) String dateStr) {
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if(role != null || !role.equals("USER")){
+            return "redirect:/";
+        }
 
         LocalDate date = (dateStr == null) ? LocalDate.now() : LocalDate.parse(dateStr);
 
@@ -137,9 +147,12 @@ public class AppointmentsController {
     @PostMapping("/book")
     public String bookAppointment(@ModelAttribute AppointmentDTO appointmentDTO, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
 
-        // The DTO from the form has worker.id and service.id populated.
-        // We fetch the full objects to avoid issues with JSON serialization.
+        if(role != null || !role.equals("USER")){
+            return "redirect:/";
+        }
+
         WorkerDTO worker = workerClient.findById(appointmentDTO.getWorker().getId(), token);
         ServiceDTO service = serviceClient.getServiceById(appointmentDTO.getService().getId(), token);
 
@@ -155,6 +168,12 @@ public class AppointmentsController {
     @GetMapping("/my-appointments")
     public String showMyAppointments(Model model, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if(role != null || !role.equals("USER") || !role.equals("WORKER")){
+            return "redirect:/";
+        }
+
         List<AppointmentDTO> myAppointments = appointmentClient.getMyAppointments(token);
         model.addAttribute("appointments", myAppointments);
         return "Appointments/my_appointments";
@@ -163,6 +182,12 @@ public class AppointmentsController {
     @PostMapping("/delete")
     public String deleteAppointment(@RequestParam("id") Long id, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if(!role.equals("WORKER")){
+            return "redirect:/";
+        }
+
         appointmentClient.deleteAppointment(id, token);
         return "redirect:/appointments/my-appointments";
     }

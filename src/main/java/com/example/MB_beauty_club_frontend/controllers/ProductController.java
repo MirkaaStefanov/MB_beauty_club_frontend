@@ -30,7 +30,7 @@ public class ProductController {
 
 
     @GetMapping
-    public String getMenuItems(
+    public String getProducts(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Boolean forSale,
             Model model,

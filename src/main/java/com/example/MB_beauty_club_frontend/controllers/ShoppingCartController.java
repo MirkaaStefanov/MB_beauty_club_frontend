@@ -30,6 +30,11 @@ public class ShoppingCartController {
     public String addToCart(@PathVariable Long id, HttpServletRequest request) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if(role.equals("WORKER")){
+            return "redirect:/";
+        }
 
         try {
             shoppingCartClient.addToCart(id, 1, token);
@@ -44,10 +49,10 @@ public class ShoppingCartController {
     public String showCart(Model model, HttpServletRequest request) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
-        String userRole = (String) request.getSession().getAttribute("sessionRole");
+        String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if (token == null) {
-            return "redirect:/auth/login?message=loginRequired";
+        if(role.equals("WORKER")){
+            return "redirect:/";
         }
 
         List<CartItemDTO> cartItems = shoppingCartClient.showCart(token);
@@ -69,9 +74,12 @@ public class ShoppingCartController {
 
     @PostMapping("/remove/{id}")
     public String remove(@PathVariable Long id, HttpServletRequest request) {
-
         String token = (String) request.getSession().getAttribute("sessionToken");
-        String userRole = (String) request.getSession().getAttribute("sessionRole");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if(role.equals("WORKER")){
+            return "redirect:/";
+        }
 
         shoppingCartClient.removeCartItem(id, token);
         return "redirect:/shopping-cart";
@@ -81,7 +89,11 @@ public class ShoppingCartController {
     public String updateQuantity(@RequestParam Long cartItemId, @RequestParam int quantity, HttpServletRequest request) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
-        String userRole = (String) request.getSession().getAttribute("sessionRole");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if(role.equals("WORKER")){
+            return "redirect:/";
+        }
 
         shoppingCartClient.updateQuantity(cartItemId, quantity, token);
         return "redirect:/shopping-cart";

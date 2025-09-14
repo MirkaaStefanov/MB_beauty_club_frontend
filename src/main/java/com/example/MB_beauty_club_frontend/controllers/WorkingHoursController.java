@@ -34,8 +34,8 @@ public class WorkingHoursController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        if (userRole == null || (!userRole.equals("WORKER") && !userRole.equals("ADMIN"))) {
-            return "forward:/error";
+        if (userRole == null || !userRole.equals("WORKER")) {
+            return "redirect:/";
         }
 
         List<WorkingHoursDTO> existingHours = workingHoursClient.getMyWorkingHours(token);
@@ -63,7 +63,7 @@ public class WorkingHoursController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("WORKER")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         List<WorkingHoursDTO> existingHours = workingHoursClient.getMyWorkingHours(token);
@@ -95,7 +95,7 @@ public class WorkingHoursController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("WORKER")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         List<WorkingHoursDTO> filteredHours = workingHoursWrapper.getWorkingHours().stream()
@@ -113,7 +113,7 @@ public class WorkingHoursController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("WORKER")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         workingHoursClient.delete(id,token); // Pass the token to the client

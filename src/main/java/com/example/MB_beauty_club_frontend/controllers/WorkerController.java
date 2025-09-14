@@ -35,7 +35,7 @@ public class WorkerController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         model.addAttribute("id", userId);
@@ -51,7 +51,7 @@ public class WorkerController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         workerClient.create(userId, category, token);
@@ -65,7 +65,7 @@ public class WorkerController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         List<WorkerDTO> all = workerClient.all(token);
@@ -79,7 +79,7 @@ public class WorkerController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         WorkerDTO workerDTO = workerClient.findById(id, token);
@@ -95,7 +95,7 @@ public class WorkerController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         workerClient.update(id, workerDTO, token);
@@ -107,7 +107,7 @@ public class WorkerController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         workerClient.delete(id, token);

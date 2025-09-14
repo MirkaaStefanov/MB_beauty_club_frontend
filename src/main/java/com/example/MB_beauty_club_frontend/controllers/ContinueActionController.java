@@ -29,6 +29,7 @@ public class ContinueActionController {
     @GetMapping("/continue-action")
     public ModelAndView continueAction(HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
         PendingRequest pendingRequest = (PendingRequest) request.getSession().getAttribute("pendingRequest");
 
         if (pendingRequest == null || token == null) {
@@ -39,6 +40,10 @@ public class ContinueActionController {
 
         try {
             if (pendingRequest.getRequestURI().startsWith("/appointments/book")) {
+
+                if(!role.equals("USER")){
+                    return new ModelAndView("redirect:/");
+                }
                 // Reconstruct the AppointmentDTO from the stored parameters
                 Map<String, String[]> params = pendingRequest.getParameters();
                 AppointmentDTO appointmentDTO = new AppointmentDTO();
@@ -49,15 +54,24 @@ public class ContinueActionController {
                 appointmentDTO.getService().setId(Long.valueOf(params.get("service.id")[0]));
                 appointmentDTO.setStartTime(LocalDateTime.parse(params.get("startTime")[0]));
 
+
                 appointmentClient.bookAppointment(appointmentDTO, token);
                 return new ModelAndView("redirect:/appointments/my-appointments");
             } else if (pendingRequest.getRequestURI().startsWith("/shopping-cart/add")) {
+
+                if(!role.equals("USER")){
+                    return new ModelAndView("redirect:/");
+                }
                 // Get the product ID from the URI
                 String[] pathSegments = pendingRequest.getRequestURI().split("/");
                 Long productId = Long.valueOf(pathSegments[pathSegments.length - 1]);
                 shoppingCartClient.addToCart(productId, 1, token);
                 return new ModelAndView("redirect:/shopping-cart");
             } else if (pendingRequest.getRequestURI().startsWith("/shopping-cart/update")) {
+
+                if(!role.equals("USER")){
+                    return new ModelAndView("redirect:/");
+                }
                 // Get the parameters for updating quantity
                 Map<String, String[]> params = pendingRequest.getParameters();
                 Long cartItemId = Long.valueOf(params.get("cartItemId")[0]);

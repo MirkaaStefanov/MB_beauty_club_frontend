@@ -30,7 +30,7 @@ public class VacationsController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || (!userRole.equals("WORKER"))) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         List<VacationDTO> vacations = vacationClient.getMyVacations(token);
@@ -45,7 +45,7 @@ public class VacationsController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("WORKER")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         List<VacationDTO> existingVacations = vacationClient.getMyVacations(token);
@@ -62,7 +62,7 @@ public class VacationsController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("WORKER")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         vacationClient.setVacation(vacationDTO, token);
@@ -75,7 +75,7 @@ public class VacationsController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("WORKER")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         vacationClient.deleteVacation(id, token);
