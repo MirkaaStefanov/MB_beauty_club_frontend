@@ -25,7 +25,7 @@ public interface VacationsClient {
     void deleteVacation(@PathVariable Long id, @RequestHeader("Authorization") String auth);
 
     @GetMapping("/{id}")
-    List<VacationDTO> getVacationsByWorkerId(@PathVariable Long id, @RequestHeader("Authorization") String auth);
+    List<VacationDTO> getVacationsByWorkerId(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String auth);
 
 
 }

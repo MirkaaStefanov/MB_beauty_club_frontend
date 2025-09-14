@@ -21,7 +21,7 @@ public interface AppointmentClient {
     List<AppointmentDTO> getMyAppointments(@RequestHeader("Authorization") String auth);
 
     @GetMapping("/worker-appointments/{id}")
-    List<AppointmentDTO> getWorkerAppointments(@PathVariable Long id, @RequestHeader("Authorization") String auth);
+    List<AppointmentDTO> getWorkerAppointments(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @GetMapping("/pending-worker-appointments")
     List<AppointmentDTO> getPendingWorkerAppointments(@RequestHeader("Authorization") String auth);

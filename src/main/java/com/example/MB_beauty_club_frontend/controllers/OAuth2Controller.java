@@ -2,6 +2,7 @@ package com.example.MB_beauty_club_frontend.controllers;
 
 import com.example.MB_beauty_club_frontend.clients.OAuth2Client;
 import com.example.MB_beauty_club_frontend.dtos.auth.AuthenticationResponse;
+import com.example.MB_beauty_club_frontend.dtos.auth.PendingRequest;
 import com.example.MB_beauty_club_frontend.session.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,20 @@ public class OAuth2Controller {
     public ModelAndView handleGoogleCallback(@RequestParam("code") String code, HttpServletRequest httpServletRequest) {
         ResponseEntity<AuthenticationResponse> response = oAuth2Client.googleAuthenticate(code);
         sessionManager.setSessionToken(httpServletRequest, response.getBody().getAccessToken(), response.getBody().getUser().getRole().toString());
+
+        System.out.println(httpServletRequest.getSession().getAttribute("pendingRequest"));
+
+        PendingRequest pendingRequest = (PendingRequest) httpServletRequest.getSession().getAttribute("pendingRequest");
+        if (pendingRequest != null) {
+            return new ModelAndView("redirect:/continue-action");
+        }
+
+        String redirectUrl = (String) httpServletRequest.getSession().getAttribute("redirectAfterLogin");
+        if (redirectUrl != null) {
+            httpServletRequest.getSession().removeAttribute("redirectAfterLogin");
+            return new ModelAndView("redirect:" + redirectUrl);
+        }
+
         return new ModelAndView(REDIRECTTXT);
     }
 

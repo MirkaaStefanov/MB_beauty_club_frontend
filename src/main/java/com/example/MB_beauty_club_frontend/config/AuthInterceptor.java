@@ -1,5 +1,6 @@
 package com.example.MB_beauty_club_frontend.config;
 
+import com.example.MB_beauty_club_frontend.dtos.auth.PendingRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -11,27 +12,54 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // Get the JWT token from the session
         String token = (String) request.getSession().getAttribute("sessionToken");
+        String requestURI = request.getRequestURI();
 
         // Allow public access to login page, static resources, etc.
-        String requestURI = request.getRequestURI();
         if (requestURI.equals("/auth/login") ||
                 requestURI.startsWith("/login/google") ||
                 requestURI.startsWith("/process-oauth2") ||
                 requestURI.startsWith("/auth/register") ||
-                requestURI.startsWith("/") ||
-                requestURI.startsWith("/products")) {
+                requestURI.equals("/") ||
+                requestURI.startsWith("/products") ||
+                requestURI.startsWith("/continue-action") ||
+                requestURI.startsWith("/services/HAIRSTYLING") ||
+                requestURI.startsWith("/services/NAIL") ||
+                requestURI.startsWith("/services/MAKEUP") ||
+                requestURI.startsWith("/services/LASH") ||
+                requestURI.startsWith("/services/MASSAGE") ||
+                requestURI.equals("/services") ||
+                requestURI.startsWith("/appointments/calendar/") ||
+                requestURI.startsWith("/appointments/select_worker/")) {
             return true;
         }
 
-        // If no token is found, redirect to the login page
         if (token == null) {
-            response.sendRedirect("/auth/login");
-            return false; // Stop the request from proceeding
-        }
+            // Store the original request details for POST requests
+            if ("POST".equalsIgnoreCase(request.getMethod())) {
+                request.getSession().setAttribute("pendingRequest", new PendingRequest(
+                        requestURI,
+                        request.getMethod(),
+                        request.getParameterMap()
+                ));
 
-        // Token exists, proceed with the request
+                System.out.println(request.getSession().getAttribute("pendingRequest"));
+
+            } else {
+                // For GET requests, just store the URI
+                String originalUrl = requestURI;
+                String queryString = request.getQueryString();
+                if (queryString != null) {
+                    originalUrl += "?" + queryString;
+                }
+                request.getSession().setAttribute("redirectAfterLogin", originalUrl);
+
+                System.out.println(request.getSession().getAttribute("redirectAfterLogin"));
+            }
+
+            response.sendRedirect("/auth/login");
+            return false;
+        }
         return true;
     }
 

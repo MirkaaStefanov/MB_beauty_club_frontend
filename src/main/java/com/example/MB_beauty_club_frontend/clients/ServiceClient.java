@@ -17,13 +17,13 @@ import java.util.List;
 public interface ServiceClient {
 
     @GetMapping
-    List<ServiceDTO> getAllServices(@RequestHeader("Authorization") String auth);
+    List<ServiceDTO> getAllServices(@RequestHeader(value = "Authorization", required = false) String auth);
 
     @GetMapping("/byCategory")
     List<ServiceDTO> getServicesByCategory(@RequestParam("category") WorkerCategory category, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @GetMapping("/byId")
-    ServiceDTO getServiceById(@RequestParam("id") Long id, @RequestHeader("Authorization") String auth);
+    ServiceDTO getServiceById(@RequestParam("id") Long id, @RequestHeader(value = "Authorization", required = false) String auth);
 
     @PostMapping("/add")
     void addService(@RequestBody ServiceDTO serviceDTO, @RequestHeader("Authorization") String auth);

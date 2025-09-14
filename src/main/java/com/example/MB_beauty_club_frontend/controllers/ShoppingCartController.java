@@ -30,11 +30,6 @@ public class ShoppingCartController {
     public String addToCart(@PathVariable Long id, HttpServletRequest request) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
-        String userRole = (String) request.getSession().getAttribute("sessionRole");
-
-        if (token == null) {
-            return "redirect:/auth/login?message=loginRequired";
-        }
 
         try {
             shoppingCartClient.addToCart(id, 1, token);

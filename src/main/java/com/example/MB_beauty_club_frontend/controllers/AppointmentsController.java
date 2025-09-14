@@ -59,11 +59,25 @@ public class AppointmentsController {
         return "Appointments/select_worker";
     }
 
-    @GetMapping("/calendar/{workerId}")
-    public String showCalendar(@PathVariable Long workerId, @RequestParam("serviceId") Long serviceId, Model model, HttpServletRequest request, @RequestParam(name = "date", required = false) String dateStr) {
+    @GetMapping("/calendar/{workerId}/{serviceId}")
+    public String showCalendar(@PathVariable Long workerId, @PathVariable Long serviceId, Model model, HttpServletRequest request, @RequestParam(name = "date", required = false) String dateStr) {
         String token = (String) request.getSession().getAttribute("sessionToken");
 
         LocalDate date = (dateStr == null) ? LocalDate.now() : LocalDate.parse(dateStr);
+
+        // Check if the provided date is in the past
+        if (date.isBefore(LocalDate.now())) {
+            model.addAttribute("isNotAvailable", true);
+            model.addAttribute("notAvailableReason", "Не можете да изберете минала дата.");
+            // Add the correct worker and service info for the view
+            ServiceDTO service = serviceClient.getServiceById(serviceId, token);
+            WorkerDTO worker = workerClient.findById(workerId, token);
+            model.addAttribute("serviceId", serviceId);
+            model.addAttribute("workerId", workerId);
+            model.addAttribute("service", service);
+            model.addAttribute("worker", worker);
+            return "redirect:/appointments/calendar/"+workerId+"/"+serviceId;
+        }
         model.addAttribute("currentDate", date);
         model.addAttribute("workerId", workerId);
         model.addAttribute("serviceId", serviceId);
