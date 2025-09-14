@@ -27,7 +27,7 @@ public class UserController {
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
         if (userRole == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+            return "redirect:/";
         }
 
         List<PublicUserDTO> allUsers = userClient.getAllUsers(token);

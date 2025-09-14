@@ -32,7 +32,7 @@ public class ShoppingCartController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(role.equals("WORKER")){
+        if(("WORKER").equals(role)){
             return "redirect:/";
         }
 
@@ -51,7 +51,7 @@ public class ShoppingCartController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(role.equals("WORKER")){
+        if("WORKER".equals(role)){
             return "redirect:/";
         }
 
@@ -77,7 +77,7 @@ public class ShoppingCartController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(role.equals("WORKER")){
+        if("WORKER".equals(role)){
             return "redirect:/";
         }
 
@@ -91,7 +91,7 @@ public class ShoppingCartController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(role.equals("WORKER")){
+        if("WORKER".equals(role)){
             return "redirect:/";
         }
 

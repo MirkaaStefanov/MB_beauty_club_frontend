@@ -57,8 +57,8 @@ public class ProductController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        if (token == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+        if (!"ADMIN".equals(userRole)) {
+            return "redirect:/";
         }
 
         model.addAttribute("product", new ProductDTO());
@@ -75,9 +75,11 @@ public class ProductController {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
-        if (!role.equals("ADMIN")){
-            return "forward:/error";
+
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/";
         }
+
         try {
             if (productDTO.getImageFile() != null && !productDTO.getImageFile().isEmpty()) {
                 byte[] fileBytes = productDTO.getImageFile().getBytes();
@@ -106,9 +108,10 @@ public class ProductController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        if (token == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+        if (!"ADMIN".equals(userRole)) {
+            return "redirect:/";
         }
+
         ProductDTO productDTO = productClient.getById(id, token);
         model.addAttribute("product", productDTO);
 
@@ -119,8 +122,8 @@ public class ProductController {
     public String updateSubmit(@PathVariable Long id, @ModelAttribute ProductDTO productDTO, HttpServletRequest request) throws IOException {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
-        if (!role.equals("ADMIN")){
-            return "forward:/error";
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/";
         }
 
         ProductDTO existingProduct = productClient.getById(id, token);
@@ -150,9 +153,11 @@ public class ProductController {
     public String deleteMenuItem(@PathVariable Long id, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
-        if (!role.equals("ADMIN")){
-            return "forward:/error";
+
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/";
         }
+
         try {
             productClient.delete(id, token);
             redirectAttributes.addFlashAttribute("successMessage", "Menu item deleted successfully!");
@@ -168,8 +173,9 @@ public class ProductController {
     public String toggleAvailability(@PathVariable Long id, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
-        if (!role.equals("ADMIN")){
-            return "forward:/error";
+
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/";
         }
         try {
             productClient.toggleAvailability(id, token);

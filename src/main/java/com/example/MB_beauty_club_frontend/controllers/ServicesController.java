@@ -41,8 +41,8 @@ public class ServicesController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        if (userRole == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+        if (!"ADMIN".equals(userRole)) {
+            return "redirect:/";
         }
 
         List<ServiceDTO> existingServices = serviceClient.getAllServices(token);
@@ -64,8 +64,8 @@ public class ServicesController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        if (userRole == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+        if (!"ADMIN".equals(userRole)) {
+            return "redirect:/";
         }
 
         if (serviceDTO.getId() != null) {
@@ -82,8 +82,8 @@ public class ServicesController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        if (userRole == null || !userRole.equals("ADMIN")) {
-            return "forward:/error";
+        if (!"ADMIN".equals(userRole)) {
+            return "redirect:/";
         }
 
         serviceClient.deleteService(id, token);

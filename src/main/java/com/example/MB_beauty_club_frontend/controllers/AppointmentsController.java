@@ -50,9 +50,10 @@ public class AppointmentsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(role != null || !role.equals("USER")){
+        if (token != null && !"USER".equals(role)) {
             return "redirect:/";
         }
+
 
         ServiceDTO serviceDTO = serviceClient.getServiceById(id, token);
 
@@ -69,7 +70,7 @@ public class AppointmentsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(role != null || !role.equals("USER")){
+        if (token != null && !("USER".equals(role) || "WORKER".equals(role))) {
             return "redirect:/";
         }
 
@@ -149,7 +150,7 @@ public class AppointmentsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(role != null || !role.equals("USER")){
+        if (token != null && !"USER".equals(role)) {
             return "redirect:/";
         }
 
@@ -170,7 +171,7 @@ public class AppointmentsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(role != null || !role.equals("USER") || !role.equals("WORKER")){
+        if ( !("USER".equals(role) || "WORKER".equals(role))) {
             return "redirect:/";
         }
 
@@ -184,7 +185,7 @@ public class AppointmentsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(!role.equals("WORKER")){
+        if((role !=null && !"WORKER".equals(role))){
             return "redirect:/";
         }
 

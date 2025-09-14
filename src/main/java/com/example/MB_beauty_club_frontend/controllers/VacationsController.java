@@ -44,7 +44,7 @@ public class VacationsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        if (userRole == null || !userRole.equals("WORKER")) {
+        if (userRole == null || (!userRole.equals("WORKER"))) {
             return "redirect:/";
         }
 
@@ -61,7 +61,7 @@ public class VacationsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        if (userRole == null || !userRole.equals("WORKER")) {
+        if (userRole == null || (!userRole.equals("WORKER"))) {
             return "redirect:/";
         }
 
@@ -74,7 +74,7 @@ public class VacationsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
-        if (userRole == null || !userRole.equals("WORKER")) {
+        if (userRole == null || (!userRole.equals("WORKER"))) {
             return "redirect:/";
         }
 
