@@ -75,6 +75,10 @@ public class AppointmentsController {
             return "redirect:/";
         }
 
+        ServiceDTO serviceDTO = serviceClient.getServiceById(serviceId, token);
+        List<WorkerDTO> workers = workerClient.getWorkersByCategory(serviceDTO.getCategory(), token);
+        List<ServiceDTO> services = serviceClient.getServicesByCategory(serviceDTO.getCategory(), token);
+
         LocalDate date = (dateStr == null) ? LocalDate.now() : LocalDate.parse(dateStr);
 
         // Check if the provided date is in the past
@@ -111,6 +115,8 @@ public class AppointmentsController {
         List<AppointmentDTO> workerAppointments = appointmentClient.getWorkerAppointments(workerId, token);
         List<WorkingHoursDTO> workerWorkingHours = workingHoursClient.getWorkingHoursByWorkerId(workerId, token);
         List<VacationDTO> workerVacations = vacationsClient.getVacationsByWorkerId(workerId, token);
+        model.addAttribute("workers", workers);
+        model.addAttribute("services", services);
 
         // Check for vacation
         boolean isVacation = workerVacations.stream()

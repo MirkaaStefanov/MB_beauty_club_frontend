@@ -63,6 +63,18 @@
         padding: 1rem 0;
         border-bottom: 1px solid #e5e7eb;
     }
+
+    /* Custom select styling for better appearance */
+    .custom-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1.5em;
+        padding-right: 3rem !important;
+    }
   </style>
 </head>
 <body class="overflow-x-hidden min-h-screen">
@@ -72,6 +84,29 @@
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
   <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-8 text-center">Избери час</h1>
   <p class="text-lg text-center mb-12 text-gray-700" th:text="${'За дата: ' + #temporals.format(currentDate, 'dd MMMM yyyy')}"></p>
+
+  <div class="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
+    <div class="relative w-full sm:w-1/2">
+      <select id="workerSelect" class="block w-full px-4 py-2 text-base text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-colors shadow-sm custom-select">
+        <option value="" disabled>Избери служител</option>
+        <option th:each="worker : ${workers}"
+                th:value="${worker.id}"
+                th:text="${worker.name}"
+                th:selected="${worker.id.equals(workerId)}">
+        </option>
+      </select>
+    </div>
+    <div class="relative w-full sm:w-1/2">
+      <select id="serviceSelect" class="block w-full px-4 py-2 text-base text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-colors shadow-sm custom-select">
+        <option value="" disabled>Избери услуга</option>
+        <option th:each="service : ${services}"
+                th:value="${service.id}"
+                th:text="${service.name + ' - ' + #numbers.formatDecimal(service.price, 0, 'COMMA', 2, 'POINT') + ' лв.'}"
+                th:selected="${service.id.equals(serviceId)}">
+        </option>
+      </select>
+    </div>
+  </div>
 
   <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
     <div class="flex justify-between items-center mb-4 sticky-date-header">
@@ -196,6 +231,23 @@
               }
           }
       });
+  });
+
+  // Get references to the dropdowns
+  const workerSelect = document.getElementById('workerSelect');
+  const serviceSelect = document.getElementById('serviceSelect');
+
+  // Add event listeners to the dropdowns
+  workerSelect.addEventListener('change', function() {
+    const newWorkerId = this.value;
+    const currentServiceId = serviceSelect.value;
+    window.location.href = `/appointments/calendar/${newWorkerId}/${currentServiceId}?date=${currentDate}`;
+  });
+
+  serviceSelect.addEventListener('change', function() {
+    const newServiceId = this.value;
+    const currentWorkerId = workerSelect.value;
+    window.location.href = `/appointments/calendar/${currentWorkerId}/${newServiceId}?date=${currentDate}`;
   });
   /*]]>*/
 </script>
