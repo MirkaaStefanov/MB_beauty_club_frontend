@@ -6,7 +6,8 @@
   <title>MB Beauty Club - Услуги</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -17,6 +18,67 @@
     .playfair {
         font-family: 'Playfair Display', serif;
     }
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        padding: 1rem;
+        background-color: #fff;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .grid-item {
+        padding: 1rem;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        transition: background-color 0.2s, color 0.2s;
+        cursor: pointer;
+    }
+    .grid-item:hover {
+        background-color: #e5e7eb;
+    }
+    .grid-item.selected {
+        background-color: #1f2937;
+        color: #fff;
+    }
+    .grid-item.disabled {
+        background-color: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+    .sticky-date-header {
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+        z-index: 10;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    /* Custom styles for the filter buttons */
+    .filter-buttons {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background-color: #EBE3D5;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        padding: 1rem 0;
+        border-bottom: 1px solid #d1d5db;
+    }
+    .filter-buttons::-webkit-scrollbar {
+        display: none;
+    }
+    .filter-buttons a {
+        display: inline-block;
+        flex-shrink: 0;
+    }
+    .filter-buttons .active {
+        background-color: #374151;
+        color: #fff;
+        border-color: #374151;
+    }
   </style>
 </head>
 <body class="overflow-x-hidden min-h-screen">
@@ -26,31 +88,98 @@
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
   <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-4 sm:mb-0">Нашите услуги</h1>
-    <a th:if="${session.sessionRole == 'ADMIN'}" th:href="@{/services/edit}" class="inline-flex items-center space-x-2 px-6 py-3 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.652.662c-.593.148-1.12.18-1.574-.019A1.875 1.875 0 011 18.259V16.65a4.5 4.5 0 011.13-1.897l13.916-13.92z" />
+    <a th:if="${session.sessionRole == 'ADMIN'}" th:href="@{/services/edit}"
+       class="inline-flex items-center space-x-2 px-6 py-3 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+           stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.652.662c-.593.148-1.12.18-1.574-.019A1.875 1.875 0 011 18.259V16.65a4.5 4.5 0 011.13-1.897l13.916-13.92z"/>
       </svg>
       <span>Редактирай услуги</span>
     </a>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    <div th:each="service : ${services}" class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
-      <h2 class="text-2xl font-bold playfair mb-2" th:text="${service.name}"></h2>
-      <p class="text-sm text-gray-500 mb-4" th:text="${'Категория: ' + service.category.toString()}"></p>
-      <p class="text-gray-700 mb-4" th:text="${service.description}"></p>
-      <div class="flex justify-between items-center">
-        <p class="text-lg font-bold text-gray-900" th:text="${service.price + ' лв.'}"></p>
-        <p class="text-sm text-gray-600" th:text="${service.duration + ' минути'}"></p>
+  <div class="filter-buttons flex gap-4">
+    <a th:each="category : ${T(com.example.MB_beauty_club_frontend.enums.WorkerCategory).values()}"
+       th:href="${'#' + category.toString()}"
+       th:data-category-id="${category.toString()}"
+       class="px-4 py-2 border-2 border-gray-800 text-gray-800 font-semibold rounded-full hover:bg-gray-800 hover:text-white transition-colors">
+      <span th:text="${category.getDescription()}"></span>
+    </a>
+  </div>
+
+  <section class="py-8 sm:py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div th:each="category : ${T(com.example.MB_beauty_club_frontend.enums.WorkerCategory).values()}" th:id="${category.toString()}" class="mb-12 category-section">
+        <h2 class="text-3xl font-bold playfair mb-6 text-center" th:text="${category.getDescription()}"></h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div th:each="service : ${services}" th:if="${service.category.equals(category)}"
+               class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <h3 class="text-2xl font-bold playfair mb-2" th:text="${service.name}"></h3>
+            <p class="text-gray-700 mb-4" th:text="${service.description}"></p>
+            <div class="flex justify-between items-center mt-auto">
+              <p class="text-lg font-bold text-gray-900" th:text="${service.price + ' лв.'}"></p>
+              <p class="text-sm text-gray-600" th:text="${service.duration + ' минути'}"></p>
+            </div>
+            <div class="mt-4">
+              <a th:href="@{'/appointments/select_worker/' + ${service.id}}"
+                 class="block w-full text-center px-6 py-3 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors">
+                Запази час
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div th:if="${#lists.isEmpty(services)}" class="col-span-1 md:col-span-2 lg:col-span-3 text-center text-gray-500 py-16">
-      Няма налични услуги.
-    </div>
-  </div>
+  </section>
 </div>
 
 <div th:insert="~{fragments/footer :: main-footer}"></div>
 
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const categories = document.querySelectorAll('.category-section');
+      const navLinks = document.querySelectorAll('.filter-buttons a');
+
+      // Function to remove 'active' class from all links
+      function removeActiveClasses() {
+          navLinks.forEach(link => {
+              link.classList.remove('active');
+          });
+      }
+
+      // Function to add 'active' class to a specific link
+      function addActiveClass(id) {
+          const link = document.querySelector(`.filter-buttons a[data-category-id="${id}"]`);
+          if (link) {
+              link.classList.add('active');
+              // Scroll the active link into view
+              link.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+      }
+
+      // Intersection Observer to track which section is visible
+      const observerOptions = {
+          root: null,
+          rootMargin: '0px',
+          threshold: 0.5 // Adjust this value to change when the category becomes 'active'
+      };
+
+      const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                  removeActiveClasses();
+                  const categoryId = entry.target.id;
+                  addActiveClass(categoryId);
+              }
+          });
+      }, observerOptions);
+
+      // Observe each category section
+      categories.forEach(section => {
+          observer.observe(section);
+      });
+  });
+</script>
 </body>
 </html>
