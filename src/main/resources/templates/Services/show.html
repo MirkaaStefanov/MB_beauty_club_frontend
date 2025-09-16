@@ -10,51 +10,23 @@
         rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
     body {
         font-family: 'Poppins', sans-serif;
         background-color: #EBE3D5;
         color: #333;
     }
+
     .playfair {
         font-family: 'Playfair Display', serif;
     }
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-        padding: 1rem;
-        background-color: #fff;
-        border-radius: 0.75rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    .sticky-header-space {
+        padding-top: 1rem;
     }
-    .grid-item {
-        padding: 1rem;
-        text-align: center;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.5rem;
-        transition: background-color 0.2s, color 0.2s;
-        cursor: pointer;
-    }
-    .grid-item:hover {
-        background-color: #e5e7eb;
-    }
-    .grid-item.selected {
-        background-color: #1f2937;
-        color: #fff;
-    }
-    .grid-item.disabled {
-        background-color: #f3f4f6;
-        color: #9ca3af;
-        cursor: not-allowed;
-    }
-    .sticky-date-header {
-        position: sticky;
-        top: 0;
-        background-color: #fff;
-        z-index: 10;
-        padding: 1rem 0;
-        border-bottom: 1px solid #e5e7eb;
-    }
+
     /* Custom styles for the filter buttons */
     .filter-buttons {
         position: sticky;
@@ -110,8 +82,12 @@
 
   <section class="py-8 sm:py-16">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div th:each="category : ${T(com.example.MB_beauty_club_frontend.enums.WorkerCategory).values()}" th:id="${category.toString()}" class="mb-12 category-section">
-        <h2 class="text-3xl font-bold playfair mb-6 text-center" th:text="${category.getDescription()}"></h2>
+      <div th:each="category : ${T(com.example.MB_beauty_club_frontend.enums.WorkerCategory).values()}"
+           th:id="${category.toString()}"
+           class="mb-12 category-section">
+        <h2 class="text-3xl font-bold playfair mb-6 text-center">
+          <span th:text="${category.getDescription()}"></span>
+        </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div th:each="service : ${services}" th:if="${service.category.equals(category)}"
                class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
@@ -141,43 +117,51 @@
       const categories = document.querySelectorAll('.category-section');
       const navLinks = document.querySelectorAll('.filter-buttons a');
 
-      // Function to remove 'active' class from all links
       function removeActiveClasses() {
           navLinks.forEach(link => {
               link.classList.remove('active');
           });
       }
 
-      // Function to add 'active' class to a specific link
       function addActiveClass(id) {
           const link = document.querySelector(`.filter-buttons a[data-category-id="${id}"]`);
           if (link) {
+              removeActiveClasses();
               link.classList.add('active');
               // Scroll the active link into view
               link.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
           }
       }
 
-      // Intersection Observer to track which section is visible
       const observerOptions = {
           root: null,
-          rootMargin: '0px',
-          threshold: 0.5 // Adjust this value to change when the category becomes 'active'
+          rootMargin: '0px 0px -50% 0px', // When the element is in the middle of the viewport
+          threshold: 0
       };
 
       const observer = new IntersectionObserver((entries, observer) => {
           entries.forEach(entry => {
               if (entry.isIntersecting) {
-                  removeActiveClasses();
                   const categoryId = entry.target.id;
                   addActiveClass(categoryId);
               }
           });
       }, observerOptions);
 
-      // Observe each category section
       categories.forEach(section => {
           observer.observe(section);
+      });
+
+      navLinks.forEach(link => {
+          link.addEventListener('click', (event) => {
+              event.preventDefault();
+              const targetId = link.getAttribute('href').substring(1);
+              const targetElement = document.getElementById(targetId);
+              if (targetElement) {
+                  // Scroll to the element
+                  targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+          });
       });
   });
 </script>

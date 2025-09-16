@@ -20,20 +20,6 @@
         .playfair {
             font-family: 'Playfair Display', serif;
         }
-        /* New responsive container with oval edges */
-        .responsive-rounded-container {
-            width: clamp(280px, 80vw, 400px); /* Responsive sizing for mobile and desktop */
-            aspect-ratio: 1 / 1;
-            border-radius: 1.5rem; /* This creates the oval edges */
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); /* Replaces Tailwind's shadow-2xl */
-        }
-        /* The image itself now fills the container */
-        .responsive-rounded-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
     </style>
 </head>
 <body class="overflow-x-hidden">
@@ -43,7 +29,7 @@
 <main>
     <section class="relative min-h-screen pt-24 pb-12 sm:pb-24 flex items-center justify-center bg-[#EBE3D5]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between">
-            <div class="lg:w-1/2 text-center lg:text-left mb-12 lg:mb-0">
+            <div class="lg:w-1/2 text-center lg:text-left mb-12 lg:mb-0 order-2 lg:order-1">
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold playfair text-gray-800 leading-tight">Hair Experience Like No Other</h1>
                 <p class="mt-4 sm:mt-6 text-base sm:text-lg text-gray-600">
                     When booked with a cut and finish. Book online now using code: **COLOUR50**.
@@ -52,9 +38,9 @@
                     Book Appointment
                 </a>
             </div>
-            <div class="lg:w-1/2 flex justify-center">
-                <div class="responsive-rounded-container">
-                    <img th:src="@{/images/saloon.JPG?v=1.1}" alt="A modern salon interior">
+            <div class="lg:w-1/2 flex justify-center mb-12 lg:mb-0 order-1 lg:order-2">
+                <div class="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
+                    <img th:src="@{/images/saloon.jpg}" alt="A modern salon interior" class="w-full h-auto object-cover rounded-3xl">
                 </div>
             </div>
         </div>
@@ -64,54 +50,38 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-12">Нашите Услуги</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8 lg:max-w-5xl lg:mx-auto">
-
-                <a href="/services/HAIRSTYLING"
-                   class="block bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                <a th:href="@{/services#HAIRSTYLING}" class="block bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                     <h3 class="text-2xl font-semibold mb-4">Подстригване</h3>
                     <p class="text-gray-700">Професионални подстригвания за мъже и жени, съобразени с вашите желания и стил.</p>
                 </a>
-
-                <a href="/services/NAIL"
-                   class="block bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                <a th:href="@{/services#NAIL}" class="block bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                     <h3 class="text-2xl font-semibold mb-4">Маникюр и Педикюр</h3>
                     <p class="text-gray-700">Пълен набор от услуги за грижа за ноктите, включително гел лак и декорации.</p>
                 </a>
-
-                <a href="/services/MAKEUP"
-                   class="block bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                <a th:href="@{/services#MAKEUP}" class="block bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                     <h3 class="text-2xl font-semibold mb-4">Грим</h3>
                     <p class="text-gray-700">Професионален грим за всеки повод - от ежедневен до сватбен.</p>
                 </a>
-
                 <div class="md:col-span-3 flex justify-center gap-6 lg:gap-8 flex-wrap">
-
-                    <a href="/services/LASH"
-                       class="block w-full sm:w-auto md:max-w-xs lg:max-w-sm bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                    <a th:href="@{/services#LASH}" class="block w-full sm:w-auto md:max-w-xs lg:max-w-sm bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                         <h3 class="text-2xl font-semibold mb-4">Миглопластика</h3>
                         <p class="text-gray-700">Удължаване и сгъстяване на мигли за по-изразителен поглед.</p>
                     </a>
-
-                    <a href="/services/MASSAGE"
-                       class="block w-full sm:w-auto md:max-w-xs lg:max-w-sm bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                    <a th:href="@{/services#MASSAGE}" class="block w-full sm:w-auto md:max-w-xs lg:max-w-sm bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                         <h3 class="text-2xl font-semibold mb-4">Масаж</h3>
                         <p class="text-gray-700">Релаксиращи и възстановителни масажи за тяло.</p>
                     </a>
-
                 </div>
             </div>
         </div>
     </section>
 
-
-
     <section class="relative py-16 sm:py-24 bg-[#EBE3D5]" id="products">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-12">Наши Продукти</h2>
-
             <div th:if="${#lists.isEmpty(featuredProducts)}" class="text-gray-500 text-lg">
                 <p>Няма налични продукти за продажба.</p>
             </div>
-
             <div th:unless="${#lists.isEmpty(featuredProducts)}" class="flex md:hidden flex-row items-center overflow-x-auto gap-4 relative pb-4" id="products-carousel-mobile">
                 <div th:each="product : ${featuredProducts}" class="flex-none w-[280px] bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
                     <img th:if="${product.image != null and product.image.length() > 0}"
@@ -141,7 +111,6 @@
                     </a>
                 </div>
             </div>
-
             <div th:unless="${#lists.isEmpty(featuredProducts)}" class="hidden md:block">
                 <div class="grid grid-cols-2 lg:grid-cols-3 md:gap-8 justify-items-center">
                     <div th:each="product : ${featuredProducts}" class="max-w-xs bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
@@ -169,7 +138,6 @@
                     Виж Всички Продукти
                 </a>
             </div>
-
         </div>
     </section>
 </main>
@@ -178,7 +146,6 @@
 
 <script th:src="@{/js/script.js}"></script>
 <script>
-    // Existing script for mobile menu...
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
     const closeMenuButton = document.getElementById('close-menu-button');

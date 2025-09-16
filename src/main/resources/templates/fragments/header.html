@@ -38,7 +38,9 @@
 
 <header th:fragment="main-header" class="absolute top-0 left-0 right-0 z-50 p-4 sm:p-6 lg:p-8">
   <nav class="container mx-auto flex items-center justify-between">
-    <a th:href="@{/}" class="text-2xl sm:text-3xl font-bold playfair text-gray-800 drop-shadow-md">MB Beauty Club</a>
+    <a th:href="@{/}" class="flex items-center">
+      <img th:src="@{/images/logo.png}" alt="MB Beauty Club Logo" class="h-10 sm:h-12 w-auto">
+    </a>
     <div class="hidden md:flex items-center space-x-6 lg:space-x-10 text-gray-800 font-medium">
 
       <th:block th:if="${session.sessionRole == 'USER' || session.sessionToken == null}">
