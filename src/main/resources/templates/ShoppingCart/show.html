@@ -17,6 +17,15 @@
         .playfair {
             font-family: 'Playfair Display', serif;
         }
+        /* Custom class for the header space */
+        .header-space {
+            height: 80px; /* Adjust this value to match your header's height */
+        }
+        @media (min-width: 768px) {
+            .header-space {
+                height: 100px; /* Adjust for larger screens if header height changes */
+            }
+        }
         .cart-item-card {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
             transition: transform 0.2s, box-shadow 0.2s;
@@ -37,9 +46,10 @@
 </head>
 <body>
 <div th:insert="~{fragments/header :: main-header}"></div>
+<div class="header-space"></div>
 
-<div class="container mx-auto px-3 sm:px-6 lg:px-8 pt-20 pb-12">
-    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-8">
+<div class="container mx-auto px-3 sm:px-6 lg:px-8 pb-12">
+    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-8 mt-8">
         <h1 class="text-xl sm:text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-6 playfair">
             Моята Количка
         </h1>
@@ -52,7 +62,6 @@
             <div th:each="cartItem : ${cartItems}"
                  class="cart-item-card flex flex-row items-center bg-gray-50 rounded-lg p-3 sm:p-6 space-x-3 sm:space-x-6">
 
-                <!-- Product Image -->
                 <div class="flex-shrink-0 w-16 h-16 sm:w-24 sm:h-24 overflow-hidden rounded-lg bg-gray-200">
                     <img th:if="${cartItem.product.image != null and cartItem.product.image.length() > 0}"
                          th:src="'data:image/jpeg;base64,' + ${cartItem.product.image}"
@@ -64,7 +73,6 @@
                          class="w-full h-full object-cover">
                 </div>
 
-                <!-- Product Info -->
                 <div class="flex-grow text-left">
                     <h2 class="text-sm sm:text-xl font-semibold text-gray-800" th:text="${cartItem.product.name}">Product Name</h2>
                     <p class="text-xs sm:text-base text-gray-600 mt-1">
@@ -76,7 +84,6 @@
                     </p>
                 </div>
 
-                <!-- Controls -->
                 <div class="flex flex-col items-end space-y-1 sm:space-y-2">
                     <form th:action="@{/shopping-cart/update}" method="post" class="flex items-center space-x-1 sm:space-x-2 update-form">
                         <input type="hidden" name="cartItemId" th:value="${cartItem.id}">
@@ -94,7 +101,6 @@
             </div>
         </div>
 
-        <!-- Total -->
         <div th:unless="${#lists.isEmpty(cartItems)}" class="border-t-2 border-gray-200 mt-6 pt-4 sm:mt-8 sm:pt-6">
             <div class="flex justify-between items-center text-base sm:text-xl font-bold text-gray-800">
                 <span>Общо:</span>
@@ -107,7 +113,6 @@
             </div>
         </div>
 
-        <!-- Buttons -->
         <div class="flex flex-col sm:flex-row justify-between items-center mt-6 sm:mt-8 space-y-2 sm:space-y-0 sm:space-x-4">
             <a href="/products" class="w-full sm:w-auto px-3 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-200 transition text-center text-sm sm:text-base font-medium">
                 Продължи с пазаруването

@@ -37,55 +37,65 @@
 <body>
 
 <header th:fragment="main-header" class="absolute top-0 left-0 right-0 z-50 p-4 sm:p-6 lg:p-8">
-  <nav class="container mx-auto flex items-center justify-between">
-    <a th:href="@{/}" class="flex items-center">
-      <img th:src="@{/images/logo.png}" alt="MB Beauty Club Logo" class="h-10 sm:h-12 w-auto">
-    </a>
-    <div class="hidden md:flex items-center space-x-6 lg:space-x-10 text-gray-800 font-medium">
-
-      <th:block th:if="${session.sessionRole == 'USER' || session.sessionToken == null}">
-        <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Начало</a>
-        <a th:href="@{/#services}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
-        <a th:href="@{/#products}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
-      </th:block>
-      <th:block th:if="${session.sessionRole == 'ADMIN'}">
-        <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
-        <a th:href= "@{/users}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
-        <a th:href="@{/services}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
-        <a th:href="@{/workers}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Служители</a>
-      </th:block>
-      <th:block th:if="${session.sessionRole == 'WORKER'}">
-        <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Часове</a>
-        <a th:href="@{/working-hours}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Работно време</a>
-        <a th:href="@{/vacations}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Отпуски</a>
-      </th:block>
-      <th:block th:if="${session.sessionToken != null && session.sessionRole != 'WORKER'}">
-        <a href="/shopping-cart" class="header-link hover:text-gray-500 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 inline-block">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
-          </svg>
-        </a>
-      </th:block>
-      <th:block th:if="${session.sessionToken != null}">
-        <a href="/auth/logout" class="bg-gray-800 text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-700 transition-colors">Излез</a>
-      </th:block>
-      <th:block th:if="${session.sessionToken == null}">
-        <a th:href="@{/auth/login}" class="bg-gray-800 text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-700 transition-colors">Впиши се</a>
-      </th:block>
+  <nav class="container mx-auto flex items-center justify-between relative">
+    <div class="hidden md:flex items-center w-full justify-between">
+      <a th:href="@{/}" class="text-2xl sm:text-3xl font-bold playfair text-gray-800 drop-shadow-md">
+        MB Beauty Club
+      </a>
+      <a th:href="@{/}" class="flex-grow flex justify-center">
+        <img th:src="@{/images/logo.png}" alt="MB Beauty Club Logo" class="h-16 sm:h-20 w-auto">
+      </a>
+      <div class="flex items-center space-x-6 lg:space-x-10 text-gray-800 font-medium">
+        <th:block th:if="${session.sessionRole == 'USER' || session.sessionToken == null}">
+          <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Начало</a>
+          <a th:href="@{/#services}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
+          <a th:href="@{/#products}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
+        </th:block>
+        <th:block th:if="${session.sessionRole == 'ADMIN'}">
+          <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
+          <a th:href= "@{/users}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
+          <a th:href="@{/services}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
+          <a th:href="@{/workers}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Служители</a>
+        </th:block>
+        <th:block th:if="${session.sessionRole == 'WORKER'}">
+          <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Часове</a>
+          <a th:href="@{/working-hours}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Работно време</a>
+          <a th:href="@{/vacations}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Отпуски</a>
+        </th:block>
+        <th:block th:if="${session.sessionToken != null && session.sessionRole != 'WORKER'}">
+          <a href="/shopping-cart" class="header-link hover:text-gray-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 inline-block">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
+            </svg>
+          </a>
+        </th:block>
+        <th:block th:if="${session.sessionToken != null}">
+          <a href="/auth/logout" class="bg-gray-800 text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-700 transition-colors">Излез</a>
+        </th:block>
+        <th:block th:if="${session.sessionToken == null}">
+          <a th:href="@{/auth/login}" class="bg-gray-800 text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-700 transition-colors">Впиши се</a>
+        </th:block>
+      </div>
     </div>
-    <div class="md:hidden flex items-center space-x-4">
-      <th:block th:if="${session.sessionToken != null}">
-        <a href="/shopping-cart">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-800">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
+
+    <div class="md:hidden flex items-center w-full justify-between">
+      <a th:href="@{/}" class="flex-grow flex justify-center absolute left-1/2 -translate-x-1/2">
+        <img th:src="@{/images/logo.png}" alt="MB Beauty Club Logo" class="h-12 w-auto">
+      </a>
+      <div class="flex items-center space-x-4 ml-auto">
+        <th:block th:if="${session.sessionToken != null}">
+          <a href="/shopping-cart">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-800">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
+            </svg>
+          </a>
+        </th:block>
+        <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
-        </a>
-      </th:block>
-      <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-      </button>
+        </button>
+      </div>
     </div>
   </nav>
 
@@ -95,14 +105,29 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
-    <a th:href="@{/}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Home</a>
+    <div class="mb-8">
+      <img th:src="@{/images/logo.png}" alt="MB Beauty Club Logo" class="h-16 w-auto mx-auto">
+    </div>
+
     <th:block th:if="${session.sessionRole == 'USER' || session.sessionToken == null}">
-      <a th:href="@{/#services}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Services</a>
-    <a th:href="@{/#products}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Products</a>
-      </th:block>
-      <th:block th:if="${session.sessionRole == 'ADMIN'}">
-      <a th:href= "@{/users}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
+      <a th:href="@{/}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Начало</a>
+      <a th:href="@{/#services}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
+      <a th:href="@{/#products}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
     </th:block>
+
+    <th:block th:if="${session.sessionRole == 'ADMIN'}">
+      <a th:href="@{/}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
+      <a th:href= "@{/users}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
+      <a th:href="@{/services}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
+      <a th:href="@{/workers}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Служители</a>
+    </th:block>
+
+    <th:block th:if="${session.sessionRole == 'WORKER'}">
+      <a th:href="@{/}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Часове</a>
+      <a th:href="@{/working-hours}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Работно време</a>
+      <a th:href="@{/vacations}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Отпуски</a>
+    </th:block>
+
     <th:block th:if="${session.sessionToken != null}">
       <a href="/auth/logout" class="mt-8 px-8 py-3 bg-gray-800 text-white text-lg rounded-full font-semibold hover:bg-gray-700 transition-colors">Излез</a>
     </th:block>
