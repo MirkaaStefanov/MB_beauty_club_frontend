@@ -15,7 +15,10 @@ import java.util.List;
 public interface ShoppingCartClient {
 
     @PostMapping("/addToCart")
-    void addToCart(@RequestParam("productId") Long productId, @RequestParam("quantity") int quantity, @RequestHeader("Authorization") String auth);
+    void addToCart(@RequestParam(value = "productId") Long productId, @RequestParam("quantity") int quantity, @RequestHeader("Authorization") String auth);
+
+    @PostMapping("/addToCartByBarcode")
+    void addToCartByBarcode(@RequestParam(value = "barcode") String barcode, @RequestParam("quantity") int quantity, @RequestHeader("Authorization") String auth);
 
     @GetMapping("/showCart")
     List<CartItemDTO> showCart(@RequestHeader("Authorization") String auth);

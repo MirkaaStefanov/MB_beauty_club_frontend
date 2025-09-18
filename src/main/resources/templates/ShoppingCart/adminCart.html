@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Количка</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #EBE3D5;
+        color: #333;
+    }
+    .playfair {
+        font-family: 'Playfair Display', serif;
+    }
+    /* Custom class for the header space */
+    .header-space {
+        height: 80px; /* Adjust this value to match your header's height */
+    }
+    @media (min-width: 768px) {
+        .header-space {
+            height: 100px; /* Adjust for larger screens if header height changes */
+        }
+    }
+    .cart-item-card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .cart-item-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.04);
+    }
+    .delete-link {
+        color: #EF4444;
+        transition: color 0.2s ease-in-out;
+    }
+    .delete-link:hover {
+        color: #DC2626;
+        text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div th:insert="~{fragments/header :: main-header}"></div>
+<div class="header-space"></div>
+
+<div class="container mx-auto px-3 sm:px-6 lg:px-8 pb-12">
+  <div class="bg-white rounded-xl shadow-lg p-4 sm:p-8 mt-8">
+    <h1 class="text-xl sm:text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-6 playfair">
+      Моята Количка
+    </h1>
+
+    <!-- Barcode scanner input field -->
+    <div class="mb-6">
+      <label for="barcodeInput" class="block text-sm font-medium text-gray-700">Сканирай баркод:</label>
+      <input type="text" id="barcodeInput" name="barcode" autofocus
+             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+    </div>
+
+    <div th:if="${#lists.isEmpty(cartItems)}" class="text-center text-gray-500 py-10">
+      Вашата количка е празна.
+    </div>
+
+    <div th:unless="${#lists.isEmpty(cartItems)}" class="space-y-4 sm:space-y-6">
+      <div th:each="cartItem : ${cartItems}"
+           class="cart-item-card flex flex-row items-center bg-gray-50 rounded-lg p-3 sm:p-6 space-x-3 sm:space-x-6">
+
+        <div class="flex-shrink-0 w-16 h-16 sm:w-24 sm:h-24 overflow-hidden rounded-lg bg-gray-200">
+          <img th:if="${cartItem.product.image != null and cartItem.product.image.length() > 0}"
+               th:src="'data:image/jpeg;base64,' + ${cartItem.product.image}"
+               th:alt="${cartItem.product.name}"
+               class="w-full h-full object-cover">
+          <img th:unless="${cartItem.product.image != null and cartItem.product.image.length() > 0}"
+               src="https://placehold.co/600x600/C5B099/333333?text=No+Image"
+               th:alt="${product.name}"
+               class="w-full h-full object-cover">
+        </div>
+
+        <div class="flex-grow text-left">
+          <h2 class="text-sm sm:text-xl font-semibold text-gray-800" th:text="${cartItem.product.name}">Product Name</h2>
+          <p class="text-xs sm:text-base text-gray-600 mt-1">
+            Количество: <span th:text="${cartItem.quantity}">1</span>
+          </p>
+          <p class="text-sm sm:text-lg font-medium text-gray-900">
+            <span th:text="${cartItem.price}">15.00</span> лв
+            (~<span th:text="${cartItem.euroPrice}">7.67</span> €)
+          </p>
+        </div>
+
+        <div class="flex flex-col items-end space-y-1 sm:space-y-2">
+          <form th:action="@{/shopping-cart/update}" method="post" class="flex items-center space-x-1 sm:space-x-2 update-form">
+            <input type="hidden" name="cartItemId" th:value="${cartItem.id}">
+            <button type="button" class="quantity-btn px-2 py-1 sm:px-3 border rounded-l hover:bg-gray-100 text-xs sm:text-sm" data-action="decrement" th:data-item-id="${cartItem.id}">-</button>
+            <input type="text" name="quantity" th:value="${cartItem.quantity}" min="1" readonly
+                   class="w-8 sm:w-12 text-center border-t border-b text-xs sm:text-sm cart-quantity-input"
+                   th:data-original-quantity="${cartItem.quantity}">
+            <button type="button" class="quantity-btn px-2 py-1 sm:px-3 border rounded-r hover:bg-gray-100 text-xs sm:text-sm" data-action="increment" th:data-item-id="${cartItem.id}">+</button>
+          </form>
+
+          <form th:action="@{/shopping-cart/remove/{id}(id=${cartItem.id})}" method="post">
+            <button type="submit" class="delete-link text-xs sm:text-sm">Изтрий</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(cartItems)}" class="border-t-2 border-gray-200 mt-6 pt-4 sm:mt-8 sm:pt-6">
+      <div class="flex justify-between items-center text-base sm:text-xl font-bold text-gray-800">
+        <span>Общо:</span>
+        <div class="text-right">
+          <span th:text="${#numbers.formatDecimal(totalLeva, 0, 2)}" class="text-base sm:text-2xl font-bold">100.00</span> лв
+          <div class="text-xs sm:text-sm font-normal text-gray-500">
+            (~<span th:text="${#numbers.formatDecimal(totalEuro, 0, 2)}">51.13</span> €)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row justify-between items-center mt-6 sm:mt-8 space-y-2 sm:space-y-0 sm:space-x-4">
+      <form th:action="@{/orders/create}" method="post" th:unless="${#lists.isEmpty(cartItems)}" class="w-full sm:w-auto">
+        <button type="submit" class="w-full px-3 sm:px-6 py-2 sm:py-3 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition text-center text-sm sm:text-base font-medium">
+          Приключване на поръчката
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer th:insert="~{fragments/footer :: main-footer}"></footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const quantityButtons = document.querySelectorAll('.quantity-btn');
+      const barcodeInput = document.getElementById('barcodeInput');
+
+      // Focus the barcode input field on page load
+      if (barcodeInput) {
+          barcodeInput.focus();
+      }
+
+      // Add event listener for barcode scanning
+      document.addEventListener('keydown', function(event) {
+          // Check if the barcode input is the active element
+          if (document.activeElement === barcodeInput) {
+              // Check for the Enter key, which is often sent by barcode scanners
+              if (event.key === 'Enter') {
+                  // Prevent default form submission
+                  event.preventDefault();
+
+                  const barcodeValue = barcodeInput.value;
+                  if (barcodeValue) {
+                      // Create a temporary form to submit the POST request with the barcode in the URL
+                      const tempForm = document.createElement('form');
+                      tempForm.method = 'POST';
+                      tempForm.action = `/shopping-cart/addByBarcode/${barcodeValue}`;
+                      document.body.appendChild(tempForm);
+                      tempForm.submit();
+                  }
+              }
+          }
+      });
+
+      // Event listeners for quantity update buttons
+      quantityButtons.forEach(button => {
+          button.addEventListener('click', function() {
+              const form = this.closest('form');
+              const input = form.querySelector('.cart-quantity-input');
+              let currentQuantity = parseInt(input.value);
+
+              if (this.dataset.action === 'decrement' && currentQuantity > 1) {
+                  currentQuantity--;
+              } else if (this.dataset.action === 'increment') {
+                  currentQuantity++;
+              }
+
+              input.value = currentQuantity;
+
+              // Auto-submit after change
+              form.submit();
+          });
+      });
+  });
+</script>
+</body>
+</html>

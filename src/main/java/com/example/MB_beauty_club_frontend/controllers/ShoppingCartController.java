@@ -44,6 +44,24 @@ public class ShoppingCartController {
 
         return "redirect:/shopping-cart";
     }
+    @PostMapping("/addByBarcode/{barcode}")
+    public String addToCart(@PathVariable String barcode, HttpServletRequest request) {
+
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if(("WORKER").equals(role)){
+            return "redirect:/";
+        }
+
+        try {
+            shoppingCartClient.addToCartByBarcode(barcode, 1, token);
+        } catch (Exception e) {
+            log.error("Failed to add item to cart: {}", e.getMessage());
+        }
+
+        return "redirect:/shopping-cart";
+    }
 
     @GetMapping
     public String showCart(Model model, HttpServletRequest request) {
@@ -69,6 +87,9 @@ public class ShoppingCartController {
         model.addAttribute("totalLeva", totalLeva);
         model.addAttribute("totalEuro", totalEuro);
         model.addAttribute("cartItems", cartItems);
+        if("ADMIN".equals(role)){
+            return "ShoppingCart/adminCart";
+        }
         return "ShoppingCart/show";
     }
 
