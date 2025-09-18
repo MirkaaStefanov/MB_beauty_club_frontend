@@ -16,6 +16,7 @@ public class CartItemDTO {
     private ProductDTO product;
     private int quantity;
     private BigDecimal price;
+    private BigDecimal euroPrice;
     private boolean deleted;
     private ShoppingCartDTO shoppingCart;
 }

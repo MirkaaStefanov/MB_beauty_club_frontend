@@ -58,11 +58,11 @@ public class ShoppingCartController {
         List<CartItemDTO> cartItems = shoppingCartClient.showCart(token);
 
         BigDecimal totalLeva = cartItems.stream()
-                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalEuro = cartItems.stream()
-                .map(item -> item.getProduct().getEuroPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .map(item -> item.getEuroPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // Добавяне на общата сума към модела

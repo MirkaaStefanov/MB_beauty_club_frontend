@@ -3,6 +3,7 @@ package com.example.MB_beauty_club_frontend.clients;
 import com.example.MB_beauty_club_frontend.dtos.ProductDTO;
 import com.example.MB_beauty_club_frontend.enums.ProductCategory;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,5 +39,16 @@ public interface ProductClient {
 
     @PostMapping("/{id}/toggle")
     ProductDTO toggleAvailability(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String auth);
+
+    @PutMapping("/{id}/promote/{percent}")
+    ProductDTO createPromotion(
+            @PathVariable Long id,
+            @PathVariable int percent,
+            @RequestHeader(value = "Authorization", required = false) String auth);
+
+    @DeleteMapping("/{id}/promote")
+    ProductDTO deletePromotion(
+            @PathVariable Long id,
+            @RequestHeader(value = "Authorization", required = false) String auth);
 
 }

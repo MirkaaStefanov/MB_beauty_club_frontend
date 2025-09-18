@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -82,23 +82,41 @@
             <div th:if="${#lists.isEmpty(featuredProducts)}" class="text-gray-500 text-lg">
                 <p>Няма налични продукти за продажба.</p>
             </div>
+
             <div th:unless="${#lists.isEmpty(featuredProducts)}" class="flex md:hidden flex-row items-center overflow-x-auto gap-4 relative pb-4" id="products-carousel-mobile">
-                <div th:each="product : ${featuredProducts}" class="flex-none w-[280px] bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
-                    <img th:if="${product.image != null and product.image.length() > 0}"
-                         th:src="'data:image/jpeg;base64,' + ${product.image}"
-                         th:alt="${product.name}"
-                         class="w-full h-48 object-cover">
-                    <img th:unless="${product.image != null and product.image.length() > 0}"
-                         src="https://placehold.co/600x600/C5B099/333333?text=No+Image"
-                         th:alt="${product.name}"
-                         class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-2" th:text="${product.name}"></h3>
-                        <p class="text-gray-600 text-sm mb-2 h-12 overflow-hidden" th:text="${product.description}"></p>
-                        <div class="flex flex-col justify-center items-center">
-                            <span class="text-base font-bold text-gray-800" th:text="${#numbers.formatDecimal(product.price, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
-                            <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post" class="mt-2">
-                                <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-sm">Купи</button>
+                <div th:each="product : ${featuredProducts}" class="flex-none w-[280px] bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105 flex flex-col">
+                    <div class="w-full h-48 relative">
+                        <img th:if="${product.image != null and product.image.length() > 0}"
+                             th:src="'data:image/jpeg;base64,' + ${product.image}"
+                             th:alt="${product.name}"
+                             class="w-full h-full object-cover">
+                        <img th:unless="${product.image != null and product.image.length() > 0}"
+                             src="https://placehold.co/600x600/C5B099/333333?text=No+Image"
+                             th:alt="${product.name}"
+                             class="w-full h-full object-cover">
+                        <span th:if="${product.promotion}"
+                              class="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-1">
+                            <span th:text="'-' + ${product.percent} + '%'"></span>
+                        </span>
+                    </div>
+                    <div class="p-2 flex flex-col items-center justify-between flex-grow">
+                        <div>
+                            <h3 class="text-sm font-semibold mb-1" th:text="${product.name}"></h3>
+                            <p class="text-gray-600 mb-1 h-6 overflow-hidden text-xs" th:text="${product.description}"></p>
+                        </div>
+                        <div class="mt-auto text-center">
+                            <div th:if="${product.promotion}">
+                                <div class="flex flex-col items-center">
+                                    <span class="text-sm font-bold text-red-600 mb-1"
+                                          th:text="${#numbers.formatDecimal(product.promotionPrice, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.promotionEuroPrice, 1, 2) + ' €'}"></span>
+                                    <span class="text-xs text-gray-400 line-through mr-1"
+                                          th:text="${#numbers.formatDecimal(product.price, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
+                                </div>
+                            </div>
+                            <span th:unless="${product.promotion}" class="text-sm font-bold mb-1"
+                                  th:text="${#numbers.formatDecimal(product.price, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
+                            <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post">
+                                <button type="submit" class="mt-1 px-3 py-1 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-xs">Купи</button>
                             </form>
                         </div>
                     </div>
@@ -111,24 +129,42 @@
                     </a>
                 </div>
             </div>
+
             <div th:unless="${#lists.isEmpty(featuredProducts)}" class="hidden md:block">
                 <div class="grid grid-cols-2 lg:grid-cols-3 md:gap-8 justify-items-center">
-                    <div th:each="product : ${featuredProducts}" class="max-w-xs bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
-                        <img th:if="${product.image != null and product.image.length() > 0}"
-                             th:src="'data:image/jpeg;base64,' + ${product.image}"
-                             th:alt="${product.name}"
-                             class="w-full h-48 object-cover">
-                        <img th:unless="${product.image != null and product.image.length() > 0}"
-                             src="https://placehold.co/600x600/C5B099/333333?text=No+Image"
-                             th:alt="${product.name}"
-                             class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold mb-2" th:text="${product.name}"></h3>
-                            <p class="text-gray-600 text-sm mb-2 h-12 overflow-hidden" th:text="${product.description}"></p>
-                            <div class="flex flex-col justify-center items-center">
-                                <span class="text-base font-bold text-gray-800" th:text="${#numbers.formatDecimal(product.price, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
-                                <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post" class="mt-2">
-                                    <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-sm">Купи</button>
+                    <div th:each="product : ${featuredProducts}" class="max-w-xs bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105 flex flex-col">
+                        <div class="w-full h-48 relative">
+                            <img th:if="${product.image != null and product.image.length() > 0}"
+                                 th:src="'data:image/jpeg;base64,' + ${product.image}"
+                                 th:alt="${product.name}"
+                                 class="w-full h-full object-cover">
+                            <img th:unless="${product.image != null and product.image.length() > 0}"
+                                 src="https://placehold.co/600x600/C5B099/333333?text=No+Image"
+                                 th:alt="${product.name}"
+                                 class="w-full h-full object-cover">
+                            <span th:if="${product.promotion}"
+                                  class="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-1">
+                                <span th:text="'-' + ${product.percent} + '%'"></span>
+                            </span>
+                        </div>
+                        <div class="p-2 flex flex-col items-center justify-between flex-grow">
+                            <div>
+                                <h3 class="text-sm font-semibold mb-1" th:text="${product.name}"></h3>
+                                <p class="text-gray-600 mb-1 h-6 overflow-hidden text-xs" th:text="${product.description}"></p>
+                            </div>
+                            <div class="mt-auto text-center">
+                                <div th:if="${product.promotion}">
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-sm font-bold text-red-600 mb-1"
+                                              th:text="${#numbers.formatDecimal(product.promotionPrice, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.promotionEuroPrice, 1, 2) + ' €'}"></span>
+                                        <span class="text-xs text-gray-400 line-through mr-1"
+                                              th:text="${#numbers.formatDecimal(product.price, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
+                                    </div>
+                                </div>
+                                <span th:unless="${product.promotion}" class="text-sm font-bold mb-1"
+                                      th:text="${#numbers.formatDecimal(product.price, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
+                                <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post">
+                                    <button type="submit" class="mt-1 px-3 py-1 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-xs">Купи</button>
                                 </form>
                             </div>
                         </div>

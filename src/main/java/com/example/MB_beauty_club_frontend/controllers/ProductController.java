@@ -128,16 +128,20 @@ public class ProductController {
 
         ProductDTO existingProduct = productClient.getById(id, token);
 
+        existingProduct.setName(productDTO.getName());
+        existingProduct.setDescription(productDTO.getDescription());
+        existingProduct.setProductCategory(productDTO.getProductCategory());
+        existingProduct.setPrice(productDTO.getPrice());
+        existingProduct.setAvailableQuantity(productDTO.getAvailableQuantity());
+        existingProduct.setBarcode(productDTO.getBarcode());
+        existingProduct.setForSale(productDTO.isForSale());
+
         if (productDTO.getImageFile() != null && !productDTO.getImageFile().isEmpty()) {
             byte[] fileBytes = productDTO.getImageFile().getBytes();
             String encodedImage = Base64.getEncoder().encodeToString(fileBytes);
-            productDTO.setImage(encodedImage);
-        } else {
-
-            productDTO.setImage(existingProduct.getImage());
+            existingProduct.setImage(encodedImage);
         }
-
-        productClient.update(id, productDTO, token);
+        productClient.update(id, existingProduct, token);
         return "redirect:/products";
     }
 
@@ -183,6 +187,72 @@ public class ProductController {
         } catch (Exception e) {
             log.error("Error toggling availability for menu item ID {}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to toggle availability: " + e.getMessage());
+        }
+        return "redirect:/products";
+    }
+
+    @GetMapping("/promote/{id}")
+    public String promoteProduct(
+            @PathVariable Long id,
+            HttpServletRequest request,
+            Model model) {
+
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String userRole = (String) request.getSession().getAttribute("sessionRole");
+
+        if (!"ADMIN".equals(userRole)) {
+            return "redirect:/";
+        }
+
+        ProductDTO productDTO = productClient.getById(id, token);
+        model.addAttribute("product", productDTO);
+
+        return "Product/promote";
+    }
+
+    @PostMapping("/{id}/promote")
+    public String createPromotion(
+            @PathVariable Long id,
+            @RequestParam int percent,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/";
+        }
+
+        try {
+            productClient.createPromotion(id, percent, token);
+            redirectAttributes.addFlashAttribute("successMessage", "Product promotion created successfully!");
+        } catch (Exception e) {
+            log.error("Error creating promotion for product ID {}: {}", id, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to create promotion: " + e.getMessage());
+        }
+        return "redirect:/products";
+    }
+
+    @PostMapping("/{id}/remove-promote")
+    public String deletePromotion(
+            @PathVariable Long id,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/";
+        }
+
+        try {
+            productClient.deletePromotion(id, token);
+            redirectAttributes.addFlashAttribute("successMessage", "Product promotion removed successfully!");
+        } catch (Exception e) {
+            log.error("Error deleting promotion for product ID {}: {}", id, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to remove promotion: " + e.getMessage());
         }
         return "redirect:/products";
     }
