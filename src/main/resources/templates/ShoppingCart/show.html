@@ -54,6 +54,11 @@
             Моята Количка
         </h1>
 
+        <!-- Error Message Display -->
+        <div th:if="${errorMessage}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
         <div th:if="${#lists.isEmpty(cartItems)}" class="text-center text-gray-500 py-10">
             Вашата количка е празна.
         </div>

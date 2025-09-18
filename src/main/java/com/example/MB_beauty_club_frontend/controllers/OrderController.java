@@ -3,6 +3,7 @@ package com.example.MB_beauty_club_frontend.controllers;
 import com.example.MB_beauty_club_frontend.clients.OrderClient;
 import com.example.MB_beauty_club_frontend.dtos.OrderDTO;
 import com.example.MB_beauty_club_frontend.dtos.OrderProductDTO;
+import com.example.MB_beauty_club_frontend.exception.InsufficientStockException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +82,7 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public String createOrder(HttpServletRequest request) {
+    public String createOrder(HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
@@ -91,10 +93,18 @@ public class OrderController {
 
         try {
             orderClient.createOrder(token);
+            // On success, redirect to the user's orders page
+            return "redirect:/orders";
+        } catch (InsufficientStockException e) {
+            // Catch the specific stock error and add a flash attribute
+            log.error("Insufficient stock to create order: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/shopping-cart"; // Redirect back to the cart
         } catch (Exception e) {
+            // Catch any other unexpected errors
             log.error("Failed to create new order: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Възникна грешка при създаването на поръчката.");
+            return "redirect:/shopping-cart";
         }
-
-        return "redirect:/orders";
     }
 }
