@@ -36,7 +36,7 @@
         <form th:action="@{/appointments/delete}" method="post" onsubmit="return confirm('Сигурни ли сте, че искате да изтриете този час?');">
           <input type="hidden" name="id" th:value="${appointment.id}">
           <button type="submit" class="px-4 py-2 bg-red-600 text-white font-semibold rounded-full hover:bg-red-700 transition-colors">
-            Изтрий
+            Откажи
           </button>
         </form>
       </div>

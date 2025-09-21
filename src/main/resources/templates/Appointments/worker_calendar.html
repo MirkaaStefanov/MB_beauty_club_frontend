@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;0,600;0,700;0,800;0,900&display=swap"
           rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -46,7 +47,7 @@
 
         /* Specific colors for different statuses */
         .grid-item.booked-confirmed {
-            background-color: #ef4444; /* Red for CONFIRMED */
+            background-color: #1a202c; /* Black for CONFIRMED */
             color: #fff;
         }
 
@@ -112,18 +113,31 @@
     <!-- Navigation for dates -->
     <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
         <div class="flex justify-between items-center mb-4">
-            <a th:href="@{'/appointments/worker-calendar' + '?date=' + ${currentDate.minusDays(1)}}"
+            <a th:if="${currentDate.isAfter(today)}"
+               th:href="@{'/appointments/worker-calendar' + '?date=' + ${currentDate.minusDays(1)}}"
                class="p-2 rounded-full hover:bg-gray-200">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                      stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
                 </svg>
             </a>
+            <span th:unless="${currentDate.isAfter(today)}"
+                  class="p-2 rounded-full text-gray-400 cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+                </svg>
+            </span>
             <div class="flex flex-col items-center">
                 <span class="font-bold text-xl playfair"
                       th:text="${#temporals.format(currentDate, 'dd MMMM yyyy')}"></span>
                 <span class="text-gray-500 text-sm mt-1" th:text="${#temporals.dayOfWeekName(currentDate)}"></span>
             </div>
+            <button type="button" id="openCalendarBtn" class="p-2 rounded-full hover:bg-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5m18 7.5v-7.5" />
+                </svg>
+            </button>
             <a th:href="@{'/appointments/worker-calendar' + '?date=' + ${currentDate.plusDays(1)}}"
                class="p-2 rounded-full hover:bg-gray-200">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -163,33 +177,39 @@
 
 <!-- Modal for appointment info / actions -->
 <div id="slotModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-gray-100 p-8 rounded-xl shadow-xl w-96 max-w-sm">
+    <div class="bg-gray-100 p-8 rounded-xl shadow-xl w-96 max-w-sm relative">
+        <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
         <h2 class="text-2xl font-bold playfair mb-6" id="modalTitle"></h2>
         <div id="modalContent" class="mb-4"></div>
-        <div class="flex justify-end gap-4 mt-6">
-            <button onclick="closeModal()"
-                    class="px-6 py-2 bg-gray-200 text-gray-800 rounded-full font-semibold hover:bg-gray-300 transition-colors">
-                Затвори
-            </button>
-            <button id="modalActionBtn"
-                    class="px-6 py-2 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors hidden"></button>
+        <div class="flex justify-end gap-4 mt-6" id="modalButtons">
+            <!-- Buttons will be dynamically added here -->
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script th:inline="javascript">
     /*<![CDATA[*/
     const slots = [[${timeSlots}]];
     const services = [[${services}]];
     const workerId = [[${workerId}]];
     const currentDate = [[${currentDate}]];
+    const today = [[${today}]];
 
     function openSlotModal(element) {
         const slotId = element.dataset.slotId;
         const modal = document.getElementById('slotModal');
         const title = document.getElementById('modalTitle');
         const content = document.getElementById('modalContent');
-        const actionBtn = document.getElementById('modalActionBtn');
+        const modalButtons = document.getElementById('modalButtons');
+
+        // Clear previous content
+        modalButtons.innerHTML = '';
+        content.innerHTML = '';
 
         console.log("Clicked on element with slot ID:", slotId);
 
@@ -240,11 +260,8 @@
                     option.dataset.id = service.id;
                     option.dataset.duration = service.duration;
                     option.addEventListener('click', () => {
-                        // Update the hidden input field with the selected service ID
                         serviceIdInput.value = service.id;
-                        // Update the visible input field
                         serviceSearchInput.value = `${service.name} - ${service.duration} мин.`;
-                        // Hide the options
                         serviceOptionsContainer.classList.add('hidden');
                     });
                     serviceOptionsContainer.appendChild(option);
@@ -252,7 +269,6 @@
             }
 
             serviceSearchInput.addEventListener('input', (e) => {
-                // Clear the hidden ID when the user types
                 serviceIdInput.value = '';
                 const searchTerm = e.target.value.toLowerCase();
                 const filteredServices = services.filter(service =>
@@ -273,8 +289,6 @@
 
             form.addEventListener('submit', (e) => {
                 validationMessage.classList.add('hidden');
-
-                // Now, we perform a more robust check on the hidden ID
                 if (!serviceIdInput.value) {
                     validationMessage.textContent = 'Моля, изберете услуга от списъка.';
                     validationMessage.classList.remove('hidden');
@@ -283,18 +297,16 @@
                 }
 
                 const selectedService = services.find(s => s.id == serviceIdInput.value);
-  if (!selectedService) {
-      validationMessage.textContent = 'Избраната услуга не е намерена.';
-      validationMessage.classList.remove('hidden');
-      e.preventDefault();
-      return;
-  }
+                if (!selectedService) {
+                    validationMessage.textContent = 'Избраната услуга не е намерена.';
+                    validationMessage.classList.remove('hidden');
+                    e.preventDefault();
+                    return;
+                }
 
                 const duration = selectedService.duration;
                 const slotTime = new Date(document.getElementById('startTime').value);
                 const startMinutes = slotTime.getHours() * 60 + slotTime.getMinutes();
-
-                // Find all currently booked slots and their start times in minutes
                 const bookedSlotStartTimes = slots
                     .filter(s => s.appointment)
                     .map(s => {
@@ -302,7 +314,6 @@
                         return date.getHours() * 60 + date.getMinutes();
                     });
 
-                // Check for conflicts with the required duration
                 let allSlotsFree = true;
                 for (let i = 0; i < duration; i += 30) {
                     const checkMinutes = startMinutes + i;
@@ -319,7 +330,6 @@
                 }
             });
 
-            actionBtn.classList.add('hidden');
         } else {
             console.log("Searching for appointment with ID:", slotId);
             const appointment = slots.find(s => s.appointment && s.appointment.id === parseInt(slotId))?.appointment;
@@ -336,8 +346,30 @@
                         <p class="mb-2"><span class="font-bold text-gray-800">Време:</span> ${new Date(appointment.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                     </div>
                 `;
-                actionBtn.textContent = "Изтрий резервация";
-                actionBtn.onclick = () => {
+
+                if (appointment.status === 'PENDING') {
+                    const acceptBtn = document.createElement('button');
+                    acceptBtn.textContent = 'Приеми резервацията';
+                    acceptBtn.className = 'px-6 py-2 bg-green-500 text-white font-semibold rounded-full hover:bg-green-600 transition-colors';
+                    acceptBtn.onclick = () => {
+                        const form = document.createElement('form');
+                        form.method = 'post';
+                        form.action = `/appointments/updateStatus/${appointment.id}`;
+                        const statusInput = document.createElement('input');
+                        statusInput.type = 'hidden';
+                        statusInput.name = 'status';
+                        statusInput.value = 'CONFIRMED';
+                        form.appendChild(statusInput);
+                        document.body.appendChild(form);
+                        form.submit();
+                    };
+                    modalButtons.appendChild(acceptBtn);
+                }
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Изтрий резервация';
+                deleteBtn.className = 'px-6 py-2 bg-red-500 text-white font-semibold rounded-full hover:bg-red-600 transition-colors';
+                deleteBtn.onclick = () => {
                     const form = document.createElement('form');
                     form.method = 'post';
                     form.action = '/appointments/delete';
@@ -349,14 +381,12 @@
                     document.body.appendChild(form);
                     form.submit();
                 };
-                actionBtn.classList.remove('hidden');
-                actionBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
-                actionBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+                modalButtons.appendChild(deleteBtn);
+
             } else {
                 console.log("Appointment not found for ID:", slotId);
                 title.textContent = "Грешка";
                 content.innerHTML = "<p>Резервацията не е намерена.</p>";
-                actionBtn.classList.add('hidden');
             }
         }
         modal.classList.remove('hidden');
@@ -365,6 +395,34 @@
     function closeModal() {
         document.getElementById('slotModal').classList.add('hidden');
     }
+
+    // Define Bulgarian locale for Flatpickr
+    const bulgarianLocale = {
+        weekdays: {
+            shorthand: ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+            longhand: ['Неделя', 'Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък', 'Събота'],
+        },
+        months: {
+            shorthand: ['Яну', 'Фев', 'Мар', 'Апр', 'Май', 'Юни', 'Юли', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'],
+            longhand: ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'],
+        },
+        firstDayOfWeek: 1,
+    };
+
+    // Initialize Flatpickr with the custom locale and a minimum date of today
+    document.addEventListener("DOMContentLoaded", function() {
+        flatpickr("#openCalendarBtn", {
+            dateFormat: "Y-m-d",
+            defaultDate: currentDate,
+            locale: bulgarianLocale,
+            minDate: "today",
+            onChange: function(selectedDates, dateStr, instance) {
+                if (dateStr) {
+                    window.location.href = `/appointments/worker-calendar?date=${dateStr}`;
+                }
+            }
+        });
+    });
     /*]]>*/
 </script>
 </body>

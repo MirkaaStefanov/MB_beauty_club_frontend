@@ -164,6 +164,11 @@ public class AppointmentsController {
         }
 
         LocalDate date = (dateStr == null) ? LocalDate.now() : LocalDate.parse(dateStr);
+
+        if (date.isBefore(LocalDate.now())) {
+            return "redirect:/appointments/worker-calendar?date=" + LocalDate.now();
+        }
+
         UUID workerId = workerClient.findAuthenticated(token).getId();
 
         model.addAttribute("currentDate", date);
@@ -238,14 +243,29 @@ public class AppointmentsController {
         return "Appointments/my_appointments";
     }
 
+    @PostMapping("/updateStatus/{id}")
+    public String updateStatus(@PathVariable Long id, @RequestParam AppointmentStatus status, HttpServletRequest request){
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if(!"WORKER".equals(role)){
+            return "redirect:/";
+        }
+
+        appointmentClient.updateAppointmentStatus(id, status, token);
+        return "redirect:/";
+    }
+
+
     @PostMapping("/delete")
     public String deleteAppointment(@RequestParam("id") Long id, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if ((role != null && !"WORKER".equals(role))) {
+        if (token != null && !("USER".equals(role) || "WORKER".equals(role))) {
             return "redirect:/";
         }
+
 
         appointmentClient.deleteAppointment(id, token);
         return "redirect:/appointments/my-appointments";
