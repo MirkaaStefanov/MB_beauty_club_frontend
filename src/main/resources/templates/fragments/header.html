@@ -50,6 +50,7 @@
           <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Начало</a>
           <a th:href="@{/#services}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
           <a th:href="@{/#products}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
+          <a th:href="@{/appointments/my-appointments}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Часове</a>
         </th:block>
         <th:block th:if="${session.sessionRole == 'ADMIN'}">
           <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
@@ -114,6 +115,7 @@
       <a th:href="@{/}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Начало</a>
       <a th:href="@{/#services}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
       <a th:href="@{/#products}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
+      <a th:href="@{/appointments/my-appointments}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Часове</a>
     </th:block>
 
     <th:block th:if="${session.sessionRole == 'ADMIN'}">
