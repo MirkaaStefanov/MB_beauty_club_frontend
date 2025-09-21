@@ -1,5 +1,6 @@
 package com.example.MB_beauty_club_frontend.clients;
 
+import com.example.MB_beauty_club_frontend.config.FeignClientConfiguration;
 import com.example.MB_beauty_club_frontend.dtos.OrderDTO;
 import com.example.MB_beauty_club_frontend.dtos.OrderProductDTO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "MB-orders", url = "${backend.base-url}/orders")
+@FeignClient(name = "MB-orders", url = "${backend.base-url}/orders", configuration = FeignClientConfiguration.class)
 public interface OrderClient {
 
     @GetMapping

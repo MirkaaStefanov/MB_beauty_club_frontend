@@ -25,5 +25,6 @@ public class OrderDTO {
     private OrderStatus status;
     private BigDecimal price;
     private BigDecimal euroPrice;
+    private String orderNumber;
 
 }

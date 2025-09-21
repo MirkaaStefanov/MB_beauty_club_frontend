@@ -58,7 +58,7 @@
            class="order-item-card flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-50 rounded-lg p-4 sm:p-6">
         <div class="flex-grow">
           <h2 class="text-sm sm:text-xl font-semibold text-gray-800">
-            Поръчка
+            Поръчка <span th:text="${order.orderNumber}"></span>
           </h2>
           <p class="text-xs sm:text-base text-gray-600 mt-1">
             <span th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy')}">Дата на поръчката</span>

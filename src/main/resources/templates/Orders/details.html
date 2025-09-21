@@ -39,7 +39,7 @@
     <a href="/orders" class="text-indigo-600 hover:text-indigo-800 transition mb-4 inline-block">&larr; Обратно към поръчките</a>
 
     <h1 class="text-xl sm:text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-6 playfair">
-      Детайли за поръчка
+      Детайли за поръчка <span th:text="${order.orderNumber}"></span>
     </h1>
 
     <div th:if="${errorMessage}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
