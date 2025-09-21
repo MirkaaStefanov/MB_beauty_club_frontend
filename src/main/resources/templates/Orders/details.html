@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="'Детайли за поръчка ' + ${order.id}">Детайли за поръчка</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #EBE3D5;
+        color: #333;
+    }
+    .playfair {
+        font-family: 'Playfair Display', serif;
+    }
+    .header-space {
+        height: 80px;
+    }
+    @media (min-width: 768px) {
+        .header-space {
+            height: 100px;
+        }
+    }
+    .product-item-card {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+  </style>
+</head>
+<body>
+<div th:insert="~{fragments/header :: main-header}"></div>
+<div class="header-space"></div>
+
+<div class="container mx-auto px-3 sm:px-6 lg:px-8 pb-12">
+  <div class="bg-white rounded-xl shadow-lg p-4 sm:p-8 mt-8">
+    <a href="/orders" class="text-indigo-600 hover:text-indigo-800 transition mb-4 inline-block">&larr; Обратно към поръчките</a>
+
+    <h1 class="text-xl sm:text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-6 playfair">
+      Детайли за поръчка <span th:text="${order.orderNumber}"></span>
+    </h1>
+
+    <div th:if="${errorMessage}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+      <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div class="bg-gray-50 rounded-lg p-4 sm:p-6 mb-6">
+      <div class="flex justify-between text-gray-700 font-medium text-sm sm:text-base mb-2">
+        <span>Дата:</span>
+        <span th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy')}"></span>
+      </div>
+      <div class="flex justify-between text-gray-700 font-medium text-sm sm:text-base mb-2">
+        <span>Статус:</span>
+        <span th:text="${order.status}"></span>
+      </div>
+      <div class="flex justify-between text-gray-700 font-medium text-sm sm:text-base mb-2">
+        <span>Обща сума:</span>
+        <div class="flex flex-col text-right">
+          <span class="font-bold text-gray-900" th:text="${#numbers.formatDecimal(order.price, 0, 2) + ' лв'}"></span>
+          <span class="text-sm text-gray-600" th:text="'(' + ${#numbers.formatDecimal(order.euroPrice, 0, 2) + ' €'} + ')'"></span>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="text-lg sm:text-2xl font-bold text-gray-800 mb-4 playfair">Продукти в поръчката</h2>
+
+    <div th:if="${#lists.isEmpty(orderProducts)}" class="text-center text-gray-500 py-4">
+      Няма продукти в тази поръчка.
+    </div>
+
+    <div th:unless="${#lists.isEmpty(orderProducts)}" class="space-y-4">
+      <div th:each="orderProduct : ${orderProducts}"
+           class="product-item-card flex items-center bg-white rounded-lg p-3 space-x-4">
+        <div class="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 overflow-hidden rounded-lg bg-gray-200">
+          <img th:if="${orderProduct.product.image != null and orderProduct.product.image.length() > 0}"
+               th:src="'data:image/jpeg;base64,' + ${orderProduct.product.image}"
+               th:alt="${orderProduct.product.name}"
+               class="w-full h-full object-cover">
+          <img th:unless="${orderProduct.product.image != null and orderProduct.product.image.length() > 0}"
+               src="https://placehold.co/600x600/C5B099/333333?text=No+Image"
+               th:alt="${orderProduct.product.name}"
+               class="w-full h-full object-cover">
+        </div>
+        <div class="flex-grow">
+          <h3 class="text-sm sm:text-base font-semibold text-gray-800" th:text="${orderProduct.product.name}">Product Name</h3>
+          <p class="text-xs sm:text-sm text-gray-600">Количество: <span th:text="${orderProduct.quantity}">1</span></p>
+        </div>
+        <div class="text-right flex flex-col items-end">
+          <p class="text-sm sm:text-base font-medium text-gray-900" th:text="${#numbers.formatDecimal(orderProduct.price, 0, 2) + ' лв'}"></p>
+          <p class="text-xs text-gray-600" th:text="'(' + ${#numbers.formatDecimal(orderProduct.euroPrice, 0, 2) + ' €'} + ')'"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer th:insert="~{fragments/footer :: main-footer}"></footer>
+</body>
+</html>

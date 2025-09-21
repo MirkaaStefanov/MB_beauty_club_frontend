@@ -54,6 +54,11 @@
             Моята Количка
         </h1>
 
+        <!-- Error Message Display -->
+        <div th:if="${errorMessage}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
         <div th:if="${#lists.isEmpty(cartItems)}" class="text-center text-gray-500 py-10">
             Вашата количка е празна.
         </div>
@@ -117,9 +122,11 @@
             <a href="/products" class="w-full sm:w-auto px-3 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-200 transition text-center text-sm sm:text-base font-medium">
                 Продължи с пазаруването
             </a>
-            <a href="/checkout" class="w-full sm:w-auto px-3 sm:px-6 py-2 sm:py-3 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition text-center text-sm sm:text-base font-medium">
-                Приключване на поръчката
-            </a>
+            <form th:action="@{/orders/create}" method="post" th:unless="${#lists.isEmpty(cartItems)}" class="w-full sm:w-auto">
+                <button type="submit" class="w-full px-3 sm:px-6 py-2 sm:py-3 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition text-center text-sm sm:text-base font-medium">
+                    Приключване на поръчката
+                </button>
+            </form>
         </div>
     </div>
 </div>

@@ -53,8 +53,9 @@
         </th:block>
         <th:block th:if="${session.sessionRole == 'ADMIN'}">
           <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
-          <a th:href= "@{/users}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
+          <a th:href="@{/orders}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Поръчки</a>
           <a th:href="@{/services}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
+          <a th:href= "@{/users}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
           <a th:href="@{/workers}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Служители</a>
         </th:block>
         <th:block th:if="${session.sessionRole == 'WORKER'}">
@@ -117,8 +118,8 @@
 
     <th:block th:if="${session.sessionRole == 'ADMIN'}">
       <a th:href="@{/}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
-      <a th:href= "@{/users}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
       <a th:href="@{/services}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
+      <a th:href= "@{/users}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
       <a th:href="@{/workers}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Служители</a>
     </th:block>
 

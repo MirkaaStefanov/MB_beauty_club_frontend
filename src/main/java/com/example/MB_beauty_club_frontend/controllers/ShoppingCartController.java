@@ -2,6 +2,7 @@ package com.example.MB_beauty_club_frontend.controllers;
 
 import com.example.MB_beauty_club_frontend.clients.ShoppingCartClient;
 import com.example.MB_beauty_club_frontend.dtos.CartItemDTO;
+import com.example.MB_beauty_club_frontend.exception.InsufficientStockException;
 import com.example.MB_beauty_club_frontend.session.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,22 +29,56 @@ public class ShoppingCartController {
     private final ShoppingCartClient shoppingCartClient;
 
     @PostMapping("/add/{id}")
-    public String addToCart(@PathVariable Long id, HttpServletRequest request) {
+    public String addToCart(@PathVariable Long id, HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(("WORKER").equals(role)){
+        if (("WORKER").equals(role)) {
             return "redirect:/";
         }
 
         try {
             shoppingCartClient.addToCart(id, 1, token);
+            return "redirect:/shopping-cart";
+        } catch (InsufficientStockException e) {
+            // Catch the specific stock error and add a flash attribute
+            log.error("Insufficient stock to create order: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/shopping-cart"; // Redirect back to the cart
         } catch (Exception e) {
-            log.error("Failed to add item to cart: {}", e.getMessage());
+            // Catch any other unexpected errors
+            log.error("Failed : {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Възникна грешка");
+            return "redirect:/shopping-cart";
         }
 
-        return "redirect:/shopping-cart";
+    }
+
+    @PostMapping("/addByBarcode/{barcode}")
+    public String addToCart(@PathVariable String barcode, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if (("WORKER").equals(role)) {
+            return "redirect:/";
+        }
+
+        try {
+            shoppingCartClient.addToCartByBarcode(barcode, 1, token);
+            return "redirect:/shopping-cart";
+        } catch (InsufficientStockException e) {
+            // Catch the specific stock error and add a flash attribute
+            log.error("Insufficient stock to create order: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/shopping-cart"; // Redirect back to the cart
+        } catch (Exception e) {
+            // Catch any other unexpected errors
+            log.error("Failed : {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Възникна грешка.");
+            return "redirect:/shopping-cart";
+        }
     }
 
     @GetMapping
@@ -51,7 +87,7 @@ public class ShoppingCartController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if("WORKER".equals(role)){
+        if ("WORKER".equals(role)) {
             return "redirect:/";
         }
 
@@ -69,6 +105,9 @@ public class ShoppingCartController {
         model.addAttribute("totalLeva", totalLeva);
         model.addAttribute("totalEuro", totalEuro);
         model.addAttribute("cartItems", cartItems);
+        if ("ADMIN".equals(role)) {
+            return "ShoppingCart/adminCart";
+        }
         return "ShoppingCart/show";
     }
 
@@ -77,7 +116,7 @@ public class ShoppingCartController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if("WORKER".equals(role)){
+        if ("WORKER".equals(role)) {
             return "redirect:/";
         }
 
@@ -86,16 +125,28 @@ public class ShoppingCartController {
     }
 
     @PostMapping("/update")
-    public String updateQuantity(@RequestParam Long cartItemId, @RequestParam int quantity, HttpServletRequest request) {
+    public String updateQuantity(@RequestParam Long cartItemId, @RequestParam int quantity, HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if("WORKER".equals(role)){
+        if ("WORKER".equals(role)) {
             return "redirect:/";
         }
+        try {
+            shoppingCartClient.updateQuantity(cartItemId, quantity, token);
+            return "redirect:/shopping-cart";
+        }catch (InsufficientStockException e) {
+            // Catch the specific stock error and add a flash attribute
+            log.error("Insufficient stock to create order: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/shopping-cart"; // Redirect back to the cart
+        } catch (Exception e) {
+            // Catch any other unexpected errors
+            log.error("Failed : {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Възникна грешка.");
+            return "redirect:/shopping-cart";
+        }
 
-        shoppingCartClient.updateQuantity(cartItemId, quantity, token);
-        return "redirect:/shopping-cart";
     }
 }
