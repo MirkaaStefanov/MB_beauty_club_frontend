@@ -7,10 +7,11 @@ import com.example.MB_beauty_club_frontend.clients.WorkerClient;
 import com.example.MB_beauty_club_frontend.clients.WorkingHoursClient;
 import com.example.MB_beauty_club_frontend.dtos.AppointmentDTO;
 import com.example.MB_beauty_club_frontend.dtos.ServiceDTO;
+import com.example.MB_beauty_club_frontend.dtos.TimeSlot;
 import com.example.MB_beauty_club_frontend.dtos.VacationDTO;
 import com.example.MB_beauty_club_frontend.dtos.WorkerDTO;
 import com.example.MB_beauty_club_frontend.dtos.WorkingHoursDTO;
-import com.example.MB_beauty_club_frontend.enums.WorkerCategory;
+import com.example.MB_beauty_club_frontend.enums.AppointmentStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,7 +51,7 @@ public class AppointmentsController {
 
 
     @GetMapping("/select_worker/{id}")
-    public String showSelectWorkerForm(@PathVariable UUID id,  Model model, HttpServletRequest request) {
+    public String showSelectWorkerForm(@PathVariable UUID id, Model model, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
@@ -92,12 +96,11 @@ public class AppointmentsController {
             model.addAttribute("workerId", workerId);
             model.addAttribute("service", service);
             model.addAttribute("worker", worker);
-            return "redirect:/appointments/calendar/"+workerId+"/"+serviceId;
+            return "redirect:/appointments/calendar/" + workerId + "/" + serviceId;
         }
         model.addAttribute("currentDate", date);
         model.addAttribute("workerId", workerId);
         model.addAttribute("serviceId", serviceId);
-
 
 
         // Add today's date to the model for a clean comparison in Thymeleaf
@@ -124,7 +127,6 @@ public class AppointmentsController {
         if (isVacation) {
             model.addAttribute("isNotAvailable", true);
             model.addAttribute("notAvailableReason", "Този служител е в отпуск на тази дата.");
-            return "Appointments/calendar";
         }
 
         // Check for working day
@@ -132,10 +134,9 @@ public class AppointmentsController {
                 .filter(wh -> wh.getDayOfWeek().equals(date.getDayOfWeek()))
                 .findFirst();
 
-        if (workingDay.isEmpty()) {
+        if (workingDay.isEmpty() && !isVacation) {
             model.addAttribute("isNotAvailable", true);
             model.addAttribute("notAvailableReason", "Това е почивен ден за служителя.");
-            return "Appointments/calendar";
         }
 
         // Filter appointments for the selected date
@@ -144,12 +145,62 @@ public class AppointmentsController {
                 .collect(Collectors.toList());
 
         // Generate available time slots
-        List<LocalTime> availableTimes = generateTimeSlots(appointmentsForDate, workingDay.get(), service.getDuration());
+        WorkingHoursDTO hours = workingDay.orElse(null);
+
+        List<LocalTime> availableTimes = generateTimeSlots(appointmentsForDate, hours, service.getDuration());
         model.addAttribute("availableTimes", availableTimes);
 
 
-
         return "Appointments/calendar";
+    }
+
+    @GetMapping("/worker-calendar")
+    public String showWorkerCalendar(Model model, HttpServletRequest request, @RequestParam(name = "date", required = false) String dateStr) {
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if (token == null || !"WORKER".equals(role)) {
+            return "redirect:/";
+        }
+
+        LocalDate date = (dateStr == null) ? LocalDate.now() : LocalDate.parse(dateStr);
+        UUID workerId = workerClient.findAuthenticated(token).getId();
+
+        model.addAttribute("currentDate", date);
+        model.addAttribute("today", LocalDate.now());
+
+        List<ServiceDTO> services = serviceClient.getAllServices(token);
+        model.addAttribute("services", services);
+
+        List<WorkingHoursDTO> workerWorkingHours = workingHoursClient.getWorkingHoursByWorkerId(workerId, token);
+        List<VacationDTO> workerVacations = vacationsClient.getVacationsByWorkerId(workerId, token);
+
+        boolean isVacation = workerVacations.stream()
+                .anyMatch(v -> !date.isBefore(v.getStartDate()) && !date.isAfter(v.getEndDate()));
+        if (isVacation) {
+            model.addAttribute("isNotAvailable", true);
+            model.addAttribute("notAvailableReason", "Днес сте в отпуск.");
+        }
+
+        Optional<WorkingHoursDTO> workingDay = workerWorkingHours.stream()
+                .filter(wh -> wh.getDayOfWeek().equals(date.getDayOfWeek()))
+                .findFirst();
+
+        if (workingDay.isEmpty() && !isVacation) {
+            model.addAttribute("isNotAvailable", true);
+            model.addAttribute("notAvailableReason", "Днес е почивен ден.");
+        }
+
+        List<AppointmentDTO> appointmentsForDate = appointmentClient.getWorkerAppointments(workerId, token).stream()
+                .filter(a -> a.getStartTime().toLocalDate().isEqual(date))
+                .collect(Collectors.toList());
+
+        WorkingHoursDTO workingHours = workingDay.orElse(new WorkingHoursDTO(null, null, null, null, null));
+        List<TimeSlot> timeSlots = generateWorkerTimeSlots(appointmentsForDate, workingHours);
+        model.addAttribute("timeSlots", timeSlots);
+        model.addAttribute("workerId", workerId);
+
+        return "Appointments/worker_calendar";
     }
 
     @PostMapping("/book")
@@ -157,7 +208,7 @@ public class AppointmentsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if (token != null && !"USER".equals(role)) {
+        if (token != null && !("USER".equals(role) || "WORKER".equals(role))) {
             return "redirect:/";
         }
 
@@ -178,7 +229,7 @@ public class AppointmentsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if ( !("USER".equals(role) || "WORKER".equals(role))) {
+        if (!("USER".equals(role))) {
             return "redirect:/";
         }
 
@@ -192,7 +243,7 @@ public class AppointmentsController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if((role !=null && !"WORKER".equals(role))){
+        if ((role != null && !"WORKER".equals(role))) {
             return "redirect:/";
         }
 
@@ -200,30 +251,76 @@ public class AppointmentsController {
         return "redirect:/appointments/my-appointments";
     }
 
-    // Helper method to generate time slots based on working hours and service duration
+    // Helper method to generate time slots for the user based on working hours and service duration
     private List<LocalTime> generateTimeSlots(List<AppointmentDTO> bookedAppointments, WorkingHoursDTO workingHours, int serviceDurationMinutes) {
-        List<LocalTime> allTimes = new ArrayList<>();
-        LocalTime start = workingHours.getStartTime();
-        LocalTime end = workingHours.getEndTime();
+        List<LocalTime> availableTimes = new ArrayList<>();
+
+        LocalTime start = (workingHours != null && workingHours.getStartTime() != null) ? workingHours.getStartTime() : LocalTime.of(9, 0);
+        LocalTime end = (workingHours != null && workingHours.getEndTime() != null) ? workingHours.getEndTime() : LocalTime.of(17, 0);
 
         while (start.plusMinutes(serviceDurationMinutes).isBefore(end) || start.plusMinutes(serviceDurationMinutes).equals(end)) {
-            final LocalTime slotStart = start;
-            final LocalTime slotEnd = start.plusMinutes(serviceDurationMinutes);
+            final LocalTime potentialSlotStart = start;
+            final LocalTime potentialSlotEnd = start.plusMinutes(serviceDurationMinutes);
 
             boolean isConflicting = bookedAppointments.stream()
                     .anyMatch(booked ->
-                            // Check for overlap
-                            (slotStart.isBefore(booked.getEndTime().toLocalTime()) && slotEnd.isAfter(booked.getStartTime().toLocalTime())) ||
-                                    // Check for exact match
-                                    (slotStart.equals(booked.getStartTime().toLocalTime()) && slotEnd.equals(booked.getEndTime().toLocalTime()))
+                            (potentialSlotStart.isBefore(booked.getEndTime().toLocalTime()) && potentialSlotEnd.isAfter(booked.getStartTime().toLocalTime())) ||
+                                    (potentialSlotStart.equals(booked.getStartTime().toLocalTime()))
                     );
 
             if (!isConflicting) {
-                allTimes.add(slotStart);
+                availableTimes.add(potentialSlotStart);
             }
             start = start.plus(30, ChronoUnit.MINUTES);
         }
 
-        return allTimes;
+        return availableTimes;
     }
+
+    private List<TimeSlot> generateWorkerTimeSlots(List<AppointmentDTO> appointmentsForDate, WorkingHoursDTO workingHours) {
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        LocalTime startTime = (workingHours != null && workingHours.getStartTime() != null) ? workingHours.getStartTime() : LocalTime.of(9, 0);
+        LocalTime endTime = (workingHours != null && workingHours.getEndTime() != null) ? workingHours.getEndTime() : LocalTime.of(17, 0);
+
+        // Sort appointments by start time to process them in order
+        appointmentsForDate.sort(Comparator.comparing(AppointmentDTO::getStartTime));
+
+        LocalTime currentTime = startTime;
+        int appointmentIndex = 0;
+
+        while (currentTime.isBefore(endTime)) {
+            boolean isSlotBooked = false;
+            AppointmentDTO currentAppointment = null;
+
+            // Check if currentTime falls within an existing appointment
+            if (appointmentIndex < appointmentsForDate.size()) {
+                AppointmentDTO nextAppointment = appointmentsForDate.get(appointmentIndex);
+                LocalTime appointmentStartTime = nextAppointment.getStartTime().toLocalTime();
+                int durationMinutes = nextAppointment.getService().getDuration();
+                LocalTime appointmentEndTime = appointmentStartTime.plusMinutes(durationMinutes);
+
+                // Check if the current time slot is occupied by this appointment
+                if (currentTime.equals(appointmentStartTime)) {
+                    isSlotBooked = true;
+                    currentAppointment = nextAppointment;
+                }
+            }
+
+            if (isSlotBooked) {
+                // If the slot is booked, add the appointment and advance currentTime by the appointment's duration
+                TimeSlot timeSlot = new TimeSlot(currentTime, currentAppointment);
+                timeSlots.add(timeSlot);
+                currentTime = currentTime.plusMinutes(currentAppointment.getService().getDuration());
+                appointmentIndex++; // Move to the next appointment
+            } else {
+                // If the slot is free, add a free slot and advance by 30 minutes
+                TimeSlot timeSlot = new TimeSlot(currentTime, null);
+                timeSlots.add(timeSlot);
+                currentTime = currentTime.plusMinutes(30);
+            }
+        }
+        return timeSlots;
+    }
+
+
 }

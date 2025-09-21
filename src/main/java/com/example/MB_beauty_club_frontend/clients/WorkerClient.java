@@ -37,4 +37,7 @@ public interface WorkerClient {
     @GetMapping("/byCategory")
     List<WorkerDTO> getWorkersByCategory(@RequestParam("category") WorkerCategory category, @RequestHeader("Authorization") String auth);
 
+    @GetMapping("/authenticated")
+    WorkerDTO findAuthenticated(@RequestHeader(value = "Authorization") String auth);
+
 }

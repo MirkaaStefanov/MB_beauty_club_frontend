@@ -22,4 +22,6 @@ public class AppointmentDTO {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private AppointmentStatus status;
+    private String username;
+    private String phoneNumber;
 }

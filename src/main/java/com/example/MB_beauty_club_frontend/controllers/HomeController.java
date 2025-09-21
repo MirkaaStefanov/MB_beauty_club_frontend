@@ -32,7 +32,7 @@ public class HomeController {
             return "redirect:/products";
         }
         if ("WORKER".equals(role)){
-            return "redirect:/appointments/my-appointments";
+            return "redirect:/appointments/worker-calendar";
         }
         List<ProductDTO> allProducts = productClient.getAllProducts(true, null, token);
 

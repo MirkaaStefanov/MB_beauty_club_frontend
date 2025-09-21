@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Календар на служител</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;0,600;0,700;0,800;0,900&display=swap"
+          rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #EBE3D5;
+            color: #333;
+        }
+
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding: 1rem;
+            background-color: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .grid-item {
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Specific colors for different statuses */
+        .grid-item.booked-confirmed {
+            background-color: #ef4444; /* Red for CONFIRMED */
+            color: #fff;
+        }
+
+        .grid-item.booked-pending {
+            background-color: #f97316; /* Orange for PENDING */
+            color: #fff;
+        }
+
+        .grid-item.booked-cancelled {
+             background-color: #9ca3af; /* Gray for CANCELLED */
+            color: #fff;
+        }
+
+        .grid-item.free {
+            background-color: #fff;
+            color: #333;
+        }
+
+        .search-select {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+            background-color: #fff;
+        }
+
+        .options-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .option {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden min-h-screen">
+
+<div th:insert="~{fragments/header :: main-header}"></div>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-8 text-center">Календар на служителя</h1>
+    <p class="text-lg text-center mb-12 text-gray-700"
+       th:text="${'За дата: ' + #temporals.format(currentDate, 'dd MMMM yyyy')}"></p>
+
+    <!-- Navigation for dates -->
+    <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <a th:href="@{'/appointments/worker-calendar' + '?date=' + ${currentDate.minusDays(1)}}"
+               class="p-2 rounded-full hover:bg-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+                </svg>
+            </a>
+            <div class="flex flex-col items-center">
+                <span class="font-bold text-xl playfair"
+                      th:text="${#temporals.format(currentDate, 'dd MMMM yyyy')}"></span>
+                <span class="text-gray-500 text-sm mt-1" th:text="${#temporals.dayOfWeekName(currentDate)}"></span>
+            </div>
+            <a th:href="@{'/appointments/worker-calendar' + '?date=' + ${currentDate.plusDays(1)}}"
+               class="p-2 rounded-full hover:bg-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                </svg>
+            </a>
+        </div>
+
+        <div th:if="${isNotAvailable}" class="text-center text-red-500 text-lg font-semibold my-8">
+            <p th:text="${notAvailableReason}"></p>
+        </div>
+
+        <div th:unless="${isNotAvailable}" class="grid-container">
+            <div th:each="slot : ${timeSlots}"
+                 th:with="appointment=${slot.appointment}"
+                 class="p-4 rounded-lg shadow-md cursor-pointer transition duration-200 ease-in-out transform hover:scale-105 grid-item"
+                 th:classappend="${appointment != null} ?
+                                 ( ${appointment.status.name() == 'CONFIRMED' ? 'booked-confirmed' :
+                                    (appointment.status.name() == 'PENDING' ? 'booked-pending' : 'booked-cancelled')} ) :
+                                'free'"
+                 th:data-slot-id="${appointment != null} ? ${appointment.id} : 'FREE-' + ${#temporals.format(slot.time, 'HH:mm')}"
+                 onclick="openSlotModal(this)">
+                <span class="font-bold text-lg" th:text="${#temporals.format(slot.time, 'HH:mm')}"></span>
+                <div th:if="${appointment != null}" class="mt-2 text-sm">
+                    <p th:text="${'Клиент: ' + (appointment.user != null ? appointment.user.name : appointment.username)}"></p>
+                    <p th:text="${'Услуга: ' + appointment.service.name}"></p>
+                    <p th:text="${'Статус: ' + appointment.status.name()}"></p>
+                </div>
+                <div th:if="${appointment == null}" class="mt-2 text-sm">
+                    <p>Свободен час</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for appointment info / actions -->
+<div id="slotModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-gray-100 p-8 rounded-xl shadow-xl w-96 max-w-sm">
+        <h2 class="text-2xl font-bold playfair mb-6" id="modalTitle"></h2>
+        <div id="modalContent" class="mb-4"></div>
+        <div class="flex justify-end gap-4 mt-6">
+            <button onclick="closeModal()"
+                    class="px-6 py-2 bg-gray-200 text-gray-800 rounded-full font-semibold hover:bg-gray-300 transition-colors">
+                Затвори
+            </button>
+            <button id="modalActionBtn"
+                    class="px-6 py-2 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors hidden"></button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const slots = [[${timeSlots}]];
+    const services = [[${services}]];
+    const workerId = [[${workerId}]];
+    const currentDate = [[${currentDate}]];
+
+    function openSlotModal(element) {
+        const slotId = element.dataset.slotId;
+        const modal = document.getElementById('slotModal');
+        const title = document.getElementById('modalTitle');
+        const content = document.getElementById('modalContent');
+        const actionBtn = document.getElementById('modalActionBtn');
+
+        console.log("Clicked on element with slot ID:", slotId);
+
+        if (slotId.startsWith("FREE")) {
+            const timeStr = slotId.replace('FREE-', '');
+            title.textContent = "Запази час";
+            content.innerHTML = `
+                <form id="bookForm" method="post" action="/appointments/book">
+                    <input type="hidden" name="worker.id" value="${workerId}"/>
+                    <input type="hidden" id="startTime" name="startTime" value="${currentDate}T${timeStr}"/>
+                    <div class="mb-4">
+                        <label for="username" class="block text-gray-700 font-medium mb-1">Име на клиент</label>
+                        <input type="text" id="username" name="username" placeholder="Име на клиент" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                    </div>
+                    <div class="mb-4">
+                        <label for="phoneNumber" class="block text-gray-700 font-medium mb-1">Телефон на клиент</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Телефон на клиент" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                    </div>
+                    <div class="mb-4">
+                        <label for="service" class="block text-gray-700 font-medium mb-1">Услуга</label>
+                        <div class="search-select relative">
+                            <input type="text" id="serviceSearch" placeholder="Търсене на услуга..." class="search-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <input type="hidden" id="serviceId" name="service.id">
+                            <div id="serviceOptions" class="options-container hidden"></div>
+                        </div>
+                    </div>
+                    <div id="validationMessage" class="text-red-500 text-sm mb-4 hidden"></div>
+                    <button type="submit" id="submitBtn" class="w-full px-6 py-3 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors shadow">Запази</button>
+                </form>`;
+
+            const form = document.getElementById('bookForm');
+            const serviceSearchInput = document.getElementById('serviceSearch');
+            const serviceIdInput = document.getElementById('serviceId');
+            const serviceOptionsContainer = document.getElementById('serviceOptions');
+            const validationMessage = document.getElementById('validationMessage');
+
+            function renderOptions(filteredServices) {
+                serviceOptionsContainer.innerHTML = '';
+                if (filteredServices.length === 0) {
+                    serviceOptionsContainer.classList.add('hidden');
+                    return;
+                }
+                serviceOptionsContainer.classList.remove('hidden');
+                filteredServices.forEach(service => {
+                    const option = document.createElement('div');
+                    option.className = 'option px-4 py-2 hover:bg-gray-200 cursor-pointer';
+                    option.textContent = `${service.name} - ${service.duration} мин.`;
+                    option.dataset.id = service.id;
+                    option.dataset.duration = service.duration;
+                    option.addEventListener('click', () => {
+                        // Update the hidden input field with the selected service ID
+                        serviceIdInput.value = service.id;
+                        // Update the visible input field
+                        serviceSearchInput.value = `${service.name} - ${service.duration} мин.`;
+                        // Hide the options
+                        serviceOptionsContainer.classList.add('hidden');
+                    });
+                    serviceOptionsContainer.appendChild(option);
+                });
+            }
+
+            serviceSearchInput.addEventListener('input', (e) => {
+                // Clear the hidden ID when the user types
+                serviceIdInput.value = '';
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredServices = services.filter(service =>
+                    service.name.toLowerCase().includes(searchTerm)
+                );
+                renderOptions(filteredServices);
+            });
+
+            serviceSearchInput.addEventListener('focus', () => {
+                renderOptions(services);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-select')) {
+                    serviceOptionsContainer.classList.add('hidden');
+                }
+            });
+
+            form.addEventListener('submit', (e) => {
+                validationMessage.classList.add('hidden');
+
+                // Now, we perform a more robust check on the hidden ID
+                if (!serviceIdInput.value) {
+                    validationMessage.textContent = 'Моля, изберете услуга от списъка.';
+                    validationMessage.classList.remove('hidden');
+                    e.preventDefault();
+                    return;
+                }
+
+                const selectedService = services.find(s => s.id == serviceIdInput.value);
+  if (!selectedService) {
+      validationMessage.textContent = 'Избраната услуга не е намерена.';
+      validationMessage.classList.remove('hidden');
+      e.preventDefault();
+      return;
+  }
+
+                const duration = selectedService.duration;
+                const slotTime = new Date(document.getElementById('startTime').value);
+                const startMinutes = slotTime.getHours() * 60 + slotTime.getMinutes();
+
+                // Find all currently booked slots and their start times in minutes
+                const bookedSlotStartTimes = slots
+                    .filter(s => s.appointment)
+                    .map(s => {
+                        const date = new Date(s.appointment.startTime);
+                        return date.getHours() * 60 + date.getMinutes();
+                    });
+
+                // Check for conflicts with the required duration
+                let allSlotsFree = true;
+                for (let i = 0; i < duration; i += 30) {
+                    const checkMinutes = startMinutes + i;
+                    if (bookedSlotStartTimes.includes(checkMinutes)) {
+                        allSlotsFree = false;
+                        break;
+                    }
+                }
+
+                if (!allSlotsFree) {
+                    validationMessage.textContent = 'Избраната услуга не се побира в този интервал поради вече съществуваща резервация.';
+                    validationMessage.classList.remove('hidden');
+                    e.preventDefault();
+                }
+            });
+
+            actionBtn.classList.add('hidden');
+        } else {
+            console.log("Searching for appointment with ID:", slotId);
+            const appointment = slots.find(s => s.appointment && s.appointment.id === parseInt(slotId))?.appointment;
+
+            if (appointment) {
+                console.log("Appointment found:", appointment);
+                title.textContent = "Детайли на резервация";
+                content.innerHTML = `
+                    <div id="appointmentDetails" class="text-gray-700">
+                        <p class="mb-2"><span class="font-bold text-gray-800">Клиент:</span> ${appointment.user ? appointment.user.name : appointment.username}</p>
+                        <p class="mb-2"><span class="font-bold text-gray-800">Телефон:</span> ${appointment.user ? appointment.user.phoneNumber : appointment.phoneNumber}</p>
+                        <p class="mb-2"><span class="font-bold text-gray-800">Услуга:</span> ${appointment.service.name}</p>
+                        <p class="mb-2"><span class="font-bold text-gray-800">Статус:</span> ${appointment.status}</p>
+                        <p class="mb-2"><span class="font-bold text-gray-800">Време:</span> ${new Date(appointment.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    </div>
+                `;
+                actionBtn.textContent = "Изтрий резервация";
+                actionBtn.onclick = () => {
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/appointments/delete';
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'id';
+                    input.value = appointment.id;
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                };
+                actionBtn.classList.remove('hidden');
+                actionBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                actionBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+            } else {
+                console.log("Appointment not found for ID:", slotId);
+                title.textContent = "Грешка";
+                content.innerHTML = "<p>Резервацията не е намерена.</p>";
+                actionBtn.classList.add('hidden');
+            }
+        }
+        modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('slotModal').classList.add('hidden');
+    }
+    /*]]>*/
+</script>
+</body>
+</html>
