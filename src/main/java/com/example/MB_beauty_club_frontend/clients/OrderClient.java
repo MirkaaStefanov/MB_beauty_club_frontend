@@ -22,6 +22,9 @@ public interface OrderClient {
     @GetMapping
     List<OrderDTO> getAllOrders(@RequestHeader("Authorization") String auth);
 
+    @GetMapping("/orderProducts")
+    List<OrderProductDTO> allOrderProducts(@RequestHeader("Authorization") String auth);
+
     @GetMapping("/{id}")
     OrderDTO getOrderById(@PathVariable UUID id, @RequestHeader("Authorization") String auth);
 

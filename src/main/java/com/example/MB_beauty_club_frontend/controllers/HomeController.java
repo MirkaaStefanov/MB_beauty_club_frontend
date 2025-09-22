@@ -29,7 +29,7 @@ public class HomeController {
         String role = (String) request.getSession().getAttribute("sessionRole");
 
         if ("ADMIN".equals(role)){
-            return "redirect:/products";
+            return "redirect:/dashboard";
         }
         if ("WORKER".equals(role)){
             return "redirect:/appointments/worker-calendar";

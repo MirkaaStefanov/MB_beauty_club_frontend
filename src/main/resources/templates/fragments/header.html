@@ -15,6 +15,7 @@
     .header-link {
         position: relative;
         text-decoration: none;
+        transition: color 0.25s ease-out;
     }
     .header-link::after {
         content: '';
@@ -22,7 +23,7 @@
         width: 100%;
         transform: scaleX(0);
         height: 2px;
-        bottom: -2px;
+        bottom: -4px;
         left: 0;
         background-color: #333;
         transform-origin: bottom right;
@@ -32,66 +33,53 @@
         transform: scaleX(1);
         transform-origin: bottom left;
     }
+    .fade-in-menu {
+        animation: fadeIn 0.5s ease-out;
+    }
+    .fade-out-menu {
+        animation: fadeOut 0.5s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
   </style>
 </head>
 <body>
 
-<header th:fragment="main-header" class="absolute top-0 left-0 right-0 z-50 p-4 sm:p-6 lg:p-8">
-  <nav class="container mx-auto flex items-center justify-between relative">
+<header th:fragment="main-header" class="bg-[#EBE3D5] relative top-0 left-0 right-0 z-50 p-2 sm:p-3 lg:p-4">
+  <nav class="container mx-auto flex items-center justify-between">
+    <!-- Desktop Header -->
     <div class="hidden md:flex items-center w-full justify-between">
+      <!-- Left side (MB Beauty Club) -->
       <a th:href="@{/}" class="text-2xl sm:text-3xl font-bold playfair text-gray-800 drop-shadow-md">
         MB Beauty Club
       </a>
+      <!-- Center (Logo) -->
       <a th:href="@{/}" class="flex-grow flex justify-center">
         <img th:src="@{/images/logo.png}" alt="MB Beauty Club Logo" class="h-16 sm:h-20 w-auto">
       </a>
-      <div class="flex items-center space-x-6 lg:space-x-10 text-gray-800 font-medium">
-        <th:block th:if="${session.sessionRole == 'USER' || session.sessionToken == null}">
-          <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Начало</a>
-          <a th:href="@{/#services}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
-          <a th:href="@{/#products}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
-          <a th:href="@{/appointments/my-appointments}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Часове</a>
-        </th:block>
-        <th:block th:if="${session.sessionRole == 'ADMIN'}">
-          <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
-          <a th:href="@{/orders}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Поръчки</a>
-          <a th:href="@{/services}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
-          <a th:href= "@{/users}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
-          <a th:href="@{/workers}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Служители</a>
-        </th:block>
-        <th:block th:if="${session.sessionRole == 'WORKER'}">
-          <a th:href="@{/}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Часове</a>
-          <a th:href="@{/working-hours}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Работно време</a>
-          <a th:href="@{/vacations}" class="text-gray-800 text-2xl sm:text-2xl font-semibold playfair hover:text-gray-500 transition-colors">Отпуски</a>
-        </th:block>
-        <th:block th:if="${session.sessionToken != null && session.sessionRole != 'WORKER'}">
-          <a href="/shopping-cart" class="header-link hover:text-gray-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 inline-block">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
-            </svg>
-          </a>
-        </th:block>
-        <th:block th:if="${session.sessionToken != null}">
-          <a href="/auth/logout" class="bg-gray-800 text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-700 transition-colors">Излез</a>
-        </th:block>
-        <th:block th:if="${session.sessionToken == null}">
-          <a th:href="@{/auth/login}" class="bg-gray-800 text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-700 transition-colors">Впиши се</a>
-        </th:block>
+      <!-- Right side (Dynamic Links) -->
+      <div id="desktop-nav" class="flex items-center space-x-6 lg:space-x-10 text-gray-800 font-medium">
+        <!-- Links will be dynamically added here by JavaScript -->
       </div>
     </div>
 
+    <!-- Mobile Header -->
     <div class="md:hidden flex items-center w-full justify-between">
+      <!-- Logo in the center for mobile -->
       <a th:href="@{/}" class="flex-grow flex justify-center absolute left-1/2 -translate-x-1/2">
         <img th:src="@{/images/logo.png}" alt="MB Beauty Club Logo" class="h-12 w-auto">
       </a>
+      <!-- Menu button and cart icon on the right -->
       <div class="flex items-center space-x-4 ml-auto">
-        <th:block th:if="${session.sessionToken != null}">
-          <a href="/shopping-cart">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-800">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
-            </svg>
-          </a>
-        </th:block>
+        <div id="mobile-cart-icon">
+          <!-- Cart icon will be dynamically added here by JavaScript -->
+        </div>
         <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -101,6 +89,7 @@
     </div>
   </nav>
 
+  <!-- Mobile Menu -->
   <div id="mobile-menu" class="hidden fixed top-0 left-0 w-full h-screen bg-white bg-opacity-95 flex flex-col items-center justify-center space-y-8 z-50 transition-transform duration-500 ease-in-out">
     <button id="close-menu-button" class="absolute top-6 right-6 text-gray-800 focus:outline-none">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
@@ -110,64 +99,130 @@
     <div class="mb-8">
       <img th:src="@{/images/logo.png}" alt="MB Beauty Club Logo" class="h-16 w-auto mx-auto">
     </div>
-
-    <th:block th:if="${session.sessionRole == 'USER' || session.sessionToken == null}">
-      <a th:href="@{/}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Начало</a>
-      <a th:href="@{/#services}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
-      <a th:href="@{/#products}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
-      <a th:href="@{/appointments/my-appointments}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Часове</a>
-    </th:block>
-
-    <th:block th:if="${session.sessionRole == 'ADMIN'}">
-      <a th:href="@{/}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Продукти</a>
-      <a th:href="@{/services}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Услуги</a>
-      <a th:href= "@{/users}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Потребители</a>
-      <a th:href="@{/workers}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Служители</a>
-    </th:block>
-
-    <th:block th:if="${session.sessionRole == 'WORKER'}">
-      <a th:href="@{/}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Часове</a>
-      <a th:href="@{/working-hours}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Работно време</a>
-      <a th:href="@{/vacations}" class="text-gray-800 text-3xl sm:text-4xl font-semibold playfair hover:text-gray-500 transition-colors">Отпуски</a>
-    </th:block>
-
-    <th:block th:if="${session.sessionToken != null}">
-      <a href="/auth/logout" class="mt-8 px-8 py-3 bg-gray-800 text-white text-lg rounded-full font-semibold hover:bg-gray-700 transition-colors">Излез</a>
-    </th:block>
-    <th:block th:if="${session.sessionToken == null}">
-      <a th:href="@{/auth/login}" class="mt-8 px-8 py-3 bg-gray-800 text-white text-lg rounded-full font-semibold hover:bg-gray-700 transition-colors">Впиши се</a>
-    </th:block>
+    <div id="mobile-nav" class="flex flex-col items-center space-y-8">
+      <!-- Links will be dynamically added here by JavaScript -->
+    </div>
   </div>
 
-  <script>
+  <script th:inline="javascript">
+    // Get session data from Thymeleaf
+    const sessionRole = [[${session.sessionRole}]] || null;
+    const sessionToken = [[${session.sessionToken}]] || null;
+
+    const desktopNav = document.getElementById('desktop-nav');
+    const mobileNav = document.getElementById('mobile-nav');
+    const mobileCartIcon = document.getElementById('mobile-cart-icon');
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
     const closeMenuButton = document.getElementById('close-menu-button');
 
-    if (mobileMenuButton) {
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        });
-    }
+    // Function to create a link element
+    const createNavLink = (href, text, isButton = false) => {
+        const a = document.createElement('a');
+        a.href = href;
+        a.textContent = text;
+        if (isButton) {
+            a.className = 'bg-gray-800 text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-700 transition-colors';
+        } else {
+            a.className = 'header-link text-gray-800 text-lg sm:text-lg font-semibold playfair hover:text-gray-500 transition-colors';
+        }
+        return a;
+    };
 
-    if (closeMenuButton) {
-        closeMenuButton.addEventListener('click', () => {
+    // Function to render navigation links based on role
+    const renderNavigation = () => {
+        // Clear existing links
+        desktopNav.innerHTML = '';
+        mobileNav.innerHTML = '';
+        mobileCartIcon.innerHTML = '';
+
+        let links = [];
+
+        if (sessionRole === 'USER' || sessionToken === null) {
+            links = [
+                { href: '/', text: 'Начало' },
+                { href: '/#services', text: 'Услуги' },
+                { href: '/#products', text: 'Продукти' },
+                { href: '/appointments/my-appointments', text: 'Часове' },
+            ];
+        } else if (sessionRole === 'ADMIN') {
+            links = [
+                { href: '/products', text: 'Продукти' },
+                { href: '/orders', text: 'Поръчки' },
+                { href: '/services', text: 'Услуги' },
+                { href: '/users', text: 'Потребители' },
+                { href: '/workers', text: 'Служители' },
+            ];
+        } else if (sessionRole === 'WORKER') {
+            links = [
+                { href: '/', text: 'Часове' },
+                { href: '/working-hours', text: 'Работно време' },
+                { href: '/vacations', text: 'Отпуски' },
+            ];
+        }
+
+        // Render links for desktop and mobile menus
+        links.forEach(link => {
+            desktopNav.appendChild(createNavLink(link.href, link.text));
+            mobileNav.appendChild(createNavLink(link.href, link.text));
+        });
+
+        // Add cart icon for USER and anonymous sessions
+        if (sessionToken !== null && sessionRole !== 'WORKER') {
+             const cartIconHtml = `
+                <a href="/shopping-cart" class="header-link hover:text-gray-500 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 inline-block">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
+                  </svg>
+                </a>
+              `;
+             const mobileCartIconHtml = `
+                <a href="/shopping-cart">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-800">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.556-1.572 8.225a1.868 1.868 0 0 1-1.853 1.63H6.381a1.868 1.868 0 0 1-1.852-1.631l-1.572-8.224A1.875 1.875 0 0 1 4.288 8.25h15.424a1.875 1.875 0 0 1 1.853 1.694Z" />
+                  </svg>
+                </a>
+              `;
+            desktopNav.insertAdjacentHTML('beforeend', cartIconHtml);
+            mobileCartIcon.insertAdjacentHTML('beforeend', mobileCartIconHtml);
+        }
+
+        // Add login/logout buttons
+        if (sessionToken !== null) {
+            desktopNav.appendChild(createNavLink('/auth/logout', 'Излез', true));
+            mobileNav.appendChild(createNavLink('/auth/logout', 'Излез', true));
+        } else {
+            desktopNav.appendChild(createNavLink('/auth/login', 'Впиши се', true));
+            mobileNav.appendChild(createNavLink('/auth/login', 'Впиши се', true));
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', renderNavigation);
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.remove('hidden');
+        mobileMenu.classList.add('fade-in-menu');
+        mobileMenu.classList.remove('fade-out-menu');
+        document.body.style.overflow = 'hidden';
+    });
+
+    closeMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.add('fade-out-menu');
+        mobileMenu.classList.remove('fade-in-menu');
+        setTimeout(() => {
+            mobileMenu.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }, 500);
+    });
+
+    // Close mobile menu when a link is clicked
+    const menuLinks = mobileMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', () => {
             mobileMenu.classList.add('hidden');
             document.body.style.overflow = 'auto';
         });
-    }
-
-    // Close mobile menu when a link is clicked
-    if (mobileMenu) {
-        const menuLinks = mobileMenu.querySelectorAll('a');
-        menuLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            });
-        });
-    }
+    });
   </script>
 </header>
 
