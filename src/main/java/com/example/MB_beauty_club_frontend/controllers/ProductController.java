@@ -256,4 +256,49 @@ public class ProductController {
         }
         return "redirect:/products";
     }
+
+    @GetMapping("/restock/{id}")
+    public String restock(
+            @PathVariable Long id,
+            HttpServletRequest request,
+            Model model) {
+
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String userRole = (String) request.getSession().getAttribute("sessionRole");
+
+        if (!"ADMIN".equals(userRole)) {
+            return "redirect:/";
+        }
+
+        ProductDTO productDTO = productClient.getById(id, token);
+        model.addAttribute("product", productDTO);
+
+        return "Product/restock";
+    }
+
+
+    @PostMapping("/{id}/restock")
+    public String restock(
+            @PathVariable Long id,
+            @RequestParam int quantity,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/";
+        }
+
+        try {
+            productClient.restock(id, quantity, token);
+            redirectAttributes.addFlashAttribute("successMessage", "Product promotion created successfully!");
+        } catch (Exception e) {
+            log.error("Error creating promotion for product ID {}: {}", id, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to create promotion: " + e.getMessage());
+        }
+        return "redirect:/products";
+    }
+
 }

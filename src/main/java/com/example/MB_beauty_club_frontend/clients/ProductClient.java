@@ -51,4 +51,8 @@ public interface ProductClient {
             @PathVariable Long id,
             @RequestHeader(value = "Authorization", required = false) String auth);
 
+    @PutMapping("/{id}/restock/{quantity}")
+    ProductDTO restock(@PathVariable Long id, @PathVariable int quantity, @RequestHeader(value = "Authorization", required = false) String auth);
+
+
 }
