@@ -46,5 +46,8 @@ public interface OrderClient {
     @GetMapping("/my-orders")
     List<OrderDTO> getAllOrdersForAuthenticatedUser(@RequestHeader("Authorization") String auth);
 
+    @PostMapping("/updateStatus/{id}")
+    OrderDTO updateStatus(@PathVariable UUID id, @RequestHeader("Authorization") String auth);
+
 
 }

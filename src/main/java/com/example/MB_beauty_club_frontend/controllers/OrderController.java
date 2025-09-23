@@ -3,6 +3,7 @@ package com.example.MB_beauty_club_frontend.controllers;
 import com.example.MB_beauty_club_frontend.clients.OrderClient;
 import com.example.MB_beauty_club_frontend.dtos.OrderDTO;
 import com.example.MB_beauty_club_frontend.dtos.OrderProductDTO;
+import com.example.MB_beauty_club_frontend.enums.OrderStatus;
 import com.example.MB_beauty_club_frontend.exception.InsufficientStockException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +14,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,31 +33,39 @@ public class OrderController {
     private final OrderClient orderClient;
 
     @GetMapping
-    public String getMyOrders(Model model, HttpServletRequest request) {
-
+    public String getMyOrders(Model model, HttpServletRequest request, @RequestParam(required = false) String status) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        List<OrderDTO> myOrders = new ArrayList<>();
+        List<OrderDTO> orders = new ArrayList<>();
 
         if ("WORKER".equals(role)) {
             return "redirect:/";
         }
 
         try {
-            if("ADMIN".equals(role)){
-                myOrders = orderClient.getAllOrders(token);
-            }else{
-                myOrders = orderClient.getAllOrdersForAuthenticatedUser(token);
+            if ("ADMIN".equals(role)) {
+                orders = orderClient.getAllOrders(token);
+            } else {
+                orders = orderClient.getAllOrdersForAuthenticatedUser(token);
             }
 
-            model.addAttribute("orders", myOrders);
-        } catch (Exception e) {
-            log.error("Failed to fetch orders for user: {}", e.getMessage());
-            model.addAttribute("errorMessage", "Възникна грешка при зареждането на вашите поръчки.");
-        }
+            // --- Filter logic based on the 'status' parameter ---
+            String filterStatus = (status == null || status.isEmpty()) ? "PENDING" : status;
 
-        return "Orders/my-orders";
+            orders = orders.stream()
+                    .filter(order -> order.getStatus().name().equals(filterStatus))
+                    .collect(Collectors.toList());
+
+            model.addAttribute("statuses", OrderStatus.values());
+            model.addAttribute("orders", orders);
+            model.addAttribute("currentStatus", status); // Add the current status to the model
+            return "Orders/my-orders";
+        } catch (Exception e) {
+            log.error("Failed to fetch orders: {}", e.getMessage());
+            model.addAttribute("errorMessage", "Възникна грешка при зареждането на поръчките.");
+            return "Orders/my-orders";
+        }
     }
 
     @GetMapping("/{id}")
@@ -62,7 +74,7 @@ public class OrderController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if ("WORKER".equals(role)) {
+        if ("WORKER".equals(role) || token == null) {
             return "redirect:/";
         }
 
@@ -87,7 +99,7 @@ public class OrderController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if ("WORKER".equals(role)) {
+        if (!"ADMIN".equals(role)) {
             return "redirect:/";
         }
 
@@ -106,5 +118,19 @@ public class OrderController {
             redirectAttributes.addFlashAttribute("errorMessage", "Възникна грешка при създаването на поръчката.");
             return "redirect:/shopping-cart";
         }
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateStatus(@PathVariable UUID id, HttpServletRequest request) {
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/";
+        }
+
+        orderClient.updateStatus(id, token);
+        return "redirect:/orders/" + id;
+
     }
 }
