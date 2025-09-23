@@ -57,9 +57,18 @@ public class OrderController {
                     .filter(order -> order.getStatus().name().equals(filterStatus))
                     .collect(Collectors.toList());
 
+            // --- Sorting logic based on the filtered status ---
+            if ("PENDING".equals(filterStatus) || "DELIVER".equals(filterStatus)) {
+                // Sort by order date, oldest first (ascending)
+                orders.sort(Comparator.comparing(OrderDTO::getOrderDate));
+            } else if ("DONE".equals(filterStatus)) {
+                // Sort by order date, newest first (descending)
+                orders.sort(Comparator.comparing(OrderDTO::getOrderDate).reversed());
+            }
+
             model.addAttribute("statuses", OrderStatus.values());
             model.addAttribute("orders", orders);
-            model.addAttribute("currentStatus", status); // Add the current status to the model
+            model.addAttribute("currentStatus", status);
             return "Orders/my-orders";
         } catch (Exception e) {
             log.error("Failed to fetch orders: {}", e.getMessage());
