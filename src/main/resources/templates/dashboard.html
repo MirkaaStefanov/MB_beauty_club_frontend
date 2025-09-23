@@ -4,13 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js for graphics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     html {
@@ -30,6 +27,9 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         padding: 24px;
         transition: transform 0.2s;
+        /* Make the card clickable */
+        cursor: pointer;
+        display: block; /* Ensure the link fills the card */
     }
     .card:hover {
         transform: translateY(-5px);
@@ -46,7 +46,6 @@
       <h1 class="text-3xl md:text-4xl font-bold playfair text-gray-800 mb-6">Табло за управление</h1>
       <p class="text-gray-600 mb-10">Преглед на данните за поръчките и продуктите.</p>
 
-      <!-- Time Filters -->
       <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
         <h2 class="text-xl font-semibold text-gray-700">Филтър по време</h2>
         <div class="flex space-x-2">
@@ -56,37 +55,32 @@
         </div>
       </div>
 
-      <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div class="card">
           <p class="text-sm text-gray-500 uppercase font-bold">Спечелени пари</p>
           <p id="total-earnings" class="text-4xl font-bold text-gray-900 mt-2">...лв</p>
         </div>
-        <div class="card">
+        <a th:href="@{/orders(status='PENDING')}" class="card">
           <p class="text-sm text-gray-500 uppercase font-bold">Поръчки в очакване</p>
           <p id="pending-orders" class="text-4xl font-bold text-yellow-500 mt-2">0</p>
-        </div>
-        <div class="card">
+        </a>
+        <a th:href="@{/orders(status='DELIVER')}" class="card">
           <p class="text-sm text-gray-500 uppercase font-bold">Поръчки за доставка</p>
           <p id="deliver-orders" class="text-4xl font-bold text-green-500 mt-2">0</p>
-        </div>
+        </a>
       </div>
 
-      <!-- Charts Section -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Earnings Chart -->
         <div class="card">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">Спечелени пари</h2>
           <canvas id="earningsChart"></canvas>
         </div>
 
-        <!-- Most Ordered Products Chart -->
         <div class="card">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">Най-поръчвани продукти</h2>
           <canvas id="mostOrderedProductsChart"></canvas>
         </div>
 
-        <!-- Order Status Pie Chart -->
         <div class="card md:col-span-2 flex items-center justify-center p-6">
           <div class="w-full max-w-sm">
             <h2 class="text-xl text-center font-semibold text-gray-700 mb-4">Статус на поръчките</h2>
@@ -279,7 +273,7 @@
           orderStatusChart = new Chart(statusCtx, {
               type: 'pie',
               data: {
-                  labels: ['Очакващи', 'Доставени', 'Приключени'],
+                  labels: ['Очакващи', 'За доставка', 'Приключени'],
                   datasets: [{
                       data: [initialStatusCounts.PENDING, initialStatusCounts.DELIVER, initialStatusCounts.DONE],
                       backgroundColor: ['#fde047', '#4ade80', '#2563eb'],
