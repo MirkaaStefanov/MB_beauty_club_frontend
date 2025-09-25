@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
 import java.util.List;
 
 @FeignClient(name = "MB-products", url = "${backend.base-url}/products")
@@ -53,6 +54,10 @@ public interface ProductClient {
 
     @PutMapping("/{id}/restock/{quantity}")
     ProductDTO restock(@PathVariable Long id, @PathVariable int quantity, @RequestHeader(value = "Authorization", required = false) String auth);
+
+
+    @PostMapping("/export-database")
+    void exportDatabase(@RequestHeader(value = "Authorization", required = false) String auth);
 
 
 }
