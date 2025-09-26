@@ -108,9 +108,10 @@ public class OrderController {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if (!"ADMIN".equals(role)) {
+        if (role == null || (!"ADMIN".equals(role) && !"USER".equals(role))) {
             return "redirect:/";
         }
+
 
         try {
             orderClient.createOrder(token);
