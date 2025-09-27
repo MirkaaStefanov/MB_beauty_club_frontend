@@ -32,7 +32,14 @@ public interface OrderClient {
     List<OrderProductDTO> findOrderProductsForOrder(@PathVariable UUID id, @RequestHeader("Authorization") String auth);
 
     @PostMapping
-    void createOrder(@RequestHeader("Authorization") String auth);
+    OrderDTO createOrder(@RequestHeader("Authorization") String auth);
+
+    @PostMapping("/cancelOrder/{id}")
+    void cancelOrder(@PathVariable UUID id, @RequestHeader("Authorization") String auth);
+
+    @PostMapping("/paymentSuccessful/{id}")
+    void successPayment(@PathVariable UUID id, @RequestHeader("Authorization") String auth);
+
 
     @PutMapping("/{id}")
     OrderDTO updateOrder(@PathVariable UUID id, @RequestBody OrderDTO orderDTO, @RequestHeader("Authorization") String auth);

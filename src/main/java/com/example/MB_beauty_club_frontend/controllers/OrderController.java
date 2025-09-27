@@ -1,8 +1,10 @@
 package com.example.MB_beauty_club_frontend.controllers;
 
 import com.example.MB_beauty_club_frontend.clients.OrderClient;
+import com.example.MB_beauty_club_frontend.clients.PaymentClient;
 import com.example.MB_beauty_club_frontend.dtos.OrderDTO;
 import com.example.MB_beauty_club_frontend.dtos.OrderProductDTO;
+import com.example.MB_beauty_club_frontend.dtos.PaymentRequest;
 import com.example.MB_beauty_club_frontend.enums.OrderStatus;
 import com.example.MB_beauty_club_frontend.exception.InsufficientStockException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 public class OrderController {
 
     private final OrderClient orderClient;
+    private final PaymentClient paymentClient;
 
     @GetMapping
     public String getMyOrders(Model model, HttpServletRequest request, @RequestParam(required = false) String status) {
@@ -103,31 +107,81 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public String createOrder(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    public RedirectView createOrder(HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
+        // 1. Authentication Check
         if (role == null || (!"ADMIN".equals(role) && !"USER".equals(role))) {
-            return "redirect:/";
+            // Redirect to home/login page if unauthorized
+            return new RedirectView("/");
         }
 
+        OrderDTO orderDTO = null; // Declare here for access in the catch block
 
         try {
-            orderClient.createOrder(token);
-            // On success, redirect to the user's orders page
-            return "redirect:/orders";
+            // 2. Create Order (Stock is reserved, status is PENDING)
+            orderDTO = orderClient.createOrder(token);
+            List<OrderProductDTO> orderProductDTOS = orderClient.findOrderProductsForOrder(orderDTO.getId(), token);
+
+            if(!"ADMIN".equals(role)){
+                PaymentRequest paymentRequest = new PaymentRequest();
+                paymentRequest.setOrderId(orderDTO.getId());
+                paymentRequest.setItems(orderProductDTOS);
+                paymentRequest.setTotalAmount(orderDTO.getPrice());
+
+                // 4. Get the Stripe Checkout Session URL
+                String stripeCheckoutUrl = paymentClient.createCheckoutSession(paymentRequest, token);
+
+                // 5. Success: Redirect the user directly to the external Stripe URL
+                return new RedirectView(stripeCheckoutUrl);
+            }
+
+
+            return new RedirectView("/orders");
+
+
         } catch (InsufficientStockException e) {
-            // Catch the specific stock error and add a flash attribute
+            // 6. Handle Insufficient Stock Error
             log.error("Insufficient stock to create order: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/shopping-cart"; // Redirect back to the cart
+            // Redirect back to the shopping cart
+            return new RedirectView("/shopping-cart");
+
         } catch (Exception e) {
-            // Catch any other unexpected errors
-            log.error("Failed to create new order: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "Възникна грешка при създаването на поръчката.");
-            return "redirect:/shopping-cart";
+            // 7. Handle General Error (e.g., failed API call, network issue)
+            log.error("Failed to create new order or start payment: {}", e.getMessage());
+
+            // CRITICAL: Attempt to cancel the PENDING order and restock if the error
+            // happened *after* the order was created but *before* Stripe redirect.
+            if (orderDTO != null) {
+                try {
+                    log.warn("Attempting to cancel pending order {} due to payment initiation failure.", orderDTO.getId());
+                    orderClient.cancelOrder(orderDTO.getId(), token);
+                } catch (Exception cancelException) {
+                    log.error("FATAL: Failed to cancel order {}. Stock may be locked.", orderDTO.getId(), cancelException);
+                }
+            }
+
+            redirectAttributes.addFlashAttribute("errorMessage", "Възникна грешка при стартиране на плащането. Моля, опитайте отново.");
+            // Redirect back to the shopping cart
+            return new RedirectView("/shopping-cart");
         }
+    }
+
+    @GetMapping("/payment-cancel/{id}")
+    public String paymentCancel(@PathVariable UUID id, HttpServletRequest request){
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        orderClient.cancelOrder(id,token);
+        return "redirect:/shopping-cart";
+    }
+
+    @GetMapping("/payment-success/{id}")
+    public String paymentSuccess(@PathVariable UUID id, HttpServletRequest request){
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        orderClient.successPayment(id,token);
+        return "redirect:/orders";
     }
 
     @PostMapping("/update/{id}")
