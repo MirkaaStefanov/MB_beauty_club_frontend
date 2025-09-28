@@ -132,6 +132,7 @@ public class ProductController {
         existingProduct.setDescription(productDTO.getDescription());
         existingProduct.setProductCategory(productDTO.getProductCategory());
         existingProduct.setPrice(productDTO.getPrice());
+        existingProduct.setComingPrice(productDTO.getComingPrice());
         existingProduct.setAvailableQuantity(productDTO.getAvailableQuantity());
         existingProduct.setBarcode(productDTO.getBarcode());
         existingProduct.setForSale(productDTO.isForSale());

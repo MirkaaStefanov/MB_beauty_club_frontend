@@ -82,6 +82,9 @@
         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           Цена (€)
         </th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Входяща Цена
+        </th>
         <th scope="col" class="px-col px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           Наличност
         </th>
@@ -124,6 +127,9 @@
             <span class="text-green-600 font-semibold ml-2" th:text="${#numbers.formatDecimal(product.promotionEuroPrice, 1, 2) + ' €'}"></span>
           </div>
           <span th:if="${product.promotionEuroPrice == null}" th:text="${#numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <span th:text="${product.comingPrice != null ? #numbers.formatDecimal(product.comingPrice, 1, 2) + ' лв.' : '-'}"></span>
         </td>
         <td class="px-6 py-4 whitespace-nowrap text-sm flex flex-col items-center justify-center">
             <span th:classappend="${product.availableQuantity < 10} ? 'text-red-600 font-bold' : (${product.availableQuantity > 50} ? 'text-green-600 font-bold' : 'text-orange-600 font-bold')"
