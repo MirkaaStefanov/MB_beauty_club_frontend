@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MB Beauty Club - Продукти за зареждане</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #EBE3D5;
+        color: #333;
+    }
+    .playfair {
+        font-family: 'Playfair Display', serif;
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden min-h-screen">
+
+<div th:insert="~{fragments/header :: main-header}"></div>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+  <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-4 sm:mb-0 text-red-700">Продукти за Спешно Зареждане</h1>
+    <a th:href="@{/products}" class="px-6 py-2 border border-gray-800 text-gray-800 rounded-full font-semibold hover:bg-gray-200 transition-colors">
+      Към Управление на продукти
+    </a>
+  </div>
+
+  <div th:if="${needProducts == null or needProducts.empty}" class="bg-green-100 text-green-800 p-6 rounded-xl shadow-lg text-center">
+    <p class="text-xl font-semibold">🥳 Всички продукти са с достатъчна наличност!</p>
+    <p class="text-sm mt-2">Няма продукти, които да изискват незабавно зареждане.</p>
+  </div>
+
+  <div th:unless="${needProducts == null or needProducts.empty}" class="overflow-x-auto bg-white p-6 rounded-xl shadow-lg">
+    <table class="min-w-full divide-y divide-gray-200" id="needProductsTable">
+      <thead class="bg-gray-50">
+      <tr>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Снимка
+        </th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Име на продукта
+        </th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Категория
+        </th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Входяща Цена (лв.)
+        </th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Нужно количество
+        </th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Баркод
+        </th>
+      </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+      <tr th:each="needProduct : ${needProducts}">
+
+        <td class="px-6 py-4 whitespace-nowrap">
+          <img th:if="${needProduct.product.image != null and needProduct.product.image.length() > 0}" th:src="'data:image/jpeg;base64,' + ${needProduct.product.image}" alt="Product Image" class="h-16 w-16 object-cover rounded-md">
+          <img th:unless="${needProduct.product.image != null and needProduct.product.image.length() > 0}" src="https://placehold.co/100x100/C5B099/333333?text=No+Image" alt="No Image" class="h-16 w-16 object-cover rounded-md">
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${needProduct.product.name}"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${needProduct.product.productCategory}"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <span th:text="${needProduct.product.comingPrice != null ? #numbers.formatDecimal(needProduct.product.comingPrice, 1, 2) + ' лв.' : '-'}"></span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm flex flex-col items-center justify-center">
+            <span class="text-red-600 font-bold text-lg"
+                  th:text="${needProduct.quantity}">
+            </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${needProduct.product.barcode}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', () => {
+    // Optional: Add basic interaction or focus for the admin user.
+  });
+</script>
+
+</body>
+</html>

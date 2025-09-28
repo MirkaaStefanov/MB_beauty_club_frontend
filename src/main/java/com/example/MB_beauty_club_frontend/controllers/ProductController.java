@@ -1,6 +1,7 @@
 package com.example.MB_beauty_club_frontend.controllers;
 
 import com.example.MB_beauty_club_frontend.clients.ProductClient;
+import com.example.MB_beauty_club_frontend.dtos.NeedProductDTO;
 import com.example.MB_beauty_club_frontend.dtos.ProductDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -302,4 +303,17 @@ public class ProductController {
         return "redirect:/products";
     }
 
+    @GetMapping("/need-products")
+    public String needProducts(HttpServletRequest request, Model model){
+        String token = (String) request.getSession().getAttribute("sessionToken");
+        String role = (String) request.getSession().getAttribute("sessionRole");
+
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/";
+        }
+
+        List<NeedProductDTO> needProducts = productClient.getAllNeedProducts(token);
+        model.addAttribute("needProducts", needProducts);
+        return "Product/need-products";
+    }
 }

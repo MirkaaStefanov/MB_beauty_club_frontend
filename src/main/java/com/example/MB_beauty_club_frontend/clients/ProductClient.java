@@ -1,5 +1,6 @@
 package com.example.MB_beauty_club_frontend.clients;
 
+import com.example.MB_beauty_club_frontend.dtos.NeedProductDTO;
 import com.example.MB_beauty_club_frontend.dtos.ProductDTO;
 import com.example.MB_beauty_club_frontend.enums.ProductCategory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -58,6 +59,9 @@ public interface ProductClient {
 
     @PostMapping("/export-database")
     void exportDatabase(@RequestHeader(value = "Authorization", required = false) String auth);
+
+    @GetMapping("/need-products")
+    List<NeedProductDTO> getAllNeedProducts(@RequestHeader(value = "Authorization") String auth);
 
 
 }
