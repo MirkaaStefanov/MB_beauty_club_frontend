@@ -21,10 +21,11 @@
         font-family: 'Playfair Display', serif;
     }
 
+    /* MOBILE-FIRST GRID: 2 columns on mobile */
     .grid-container {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
+        grid-template-columns: repeat(2, 1fr); /* Default 2 columns for mobile */
+        gap: 0.75rem; /* Slightly smaller gap for mobile */
         padding: 1rem;
         background-color: #fff;
         border-radius: 0.75rem;
@@ -32,16 +33,26 @@
     }
 
     .grid-item {
-        padding: 1rem;
+        padding: 0.75rem; /* Reduced padding for mobile */
         text-align: center;
         border: 1px solid #e5e7eb;
         border-radius: 0.5rem;
         transition: background-color 0.2s, color 0.2s;
         cursor: pointer;
+        font-size: 0.875rem; /* Small text size for mobile */
+        font-weight: 500;
     }
 
-    .grid-item:hover {
-        background-color: #e5e7eb;
+    /* Desktop/Tablet Grid: 3 columns */
+    @media (min-width: 640px) {
+        .grid-container {
+            grid-template-columns: repeat(3, 1fr); /* 3 columns for sm screens and up */
+            gap: 1rem;
+        }
+        .grid-item {
+            padding: 1rem;
+            font-size: 1rem;
+        }
     }
 
     .grid-item.selected {
@@ -53,6 +64,7 @@
         background-color: #f3f4f6;
         color: #9ca3af;
         cursor: not-allowed;
+        opacity: 0.7; /* Indicate unavailability clearly */
     }
 
     .sticky-date-header {
@@ -60,8 +72,26 @@
         top: 0;
         background-color: #fff;
         z-index: 10;
-        padding: 1rem 0;
+        padding: 0.5rem 0;
         border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* FIX: Ensure the date block can shrink but remains centered and visible */
+    .sticky-date-header .flex-col {
+        min-width: 0; /* Allows the content to shrink */
+        flex-grow: 1; /* Allows it to take up available space */
+        flex-shrink: 1;
+        white-space: nowrap; /* Keeps date and day on one line */
+    }
+
+    .sticky-date-header .playfair {
+        font-size: 1.125rem; /* Default text-lg for mobile date */
+    }
+
+    @media (max-width: 380px) {
+        .sticky-date-header .playfair {
+            font-size: 1rem; /* Smaller font for tiny screens */
+        }
     }
 
     /* Custom select styling for better appearance */
@@ -112,31 +142,31 @@
     <div class="flex justify-between items-center mb-4 sticky-date-header">
       <a th:if="${currentDate.isAfter(today)}"
          th:href="@{/appointments/calendar/{workerId}/{serviceId}(workerId=${workerId}, serviceId=${serviceId}, date=${currentDate.minusDays(1)})}"
-         class="p-2 rounded-full hover:bg-gray-200">
+         class="p-2 rounded-full hover:bg-gray-200 mx-1 flex-shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
              stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
         </svg>
       </a>
       <span th:unless="${currentDate.isAfter(today)}"
-            class="p-2 rounded-full text-gray-400 cursor-not-allowed">
+            class="p-2 rounded-full text-gray-400 cursor-not-allowed mx-1 flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                      stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
                 </svg>
             </span>
-      <div class="flex flex-col items-center">
-                <span class="font-bold text-xl playfair"
+      <div class="flex flex-col items-center flex-grow mx-1">
+                <span class="font-bold text-lg playfair sm:text-xl"
                       th:text="${#temporals.format(currentDate, 'dd MMMM yyyy')}"></span>
-        <span class="text-gray-500 text-sm mt-1" th:text="${#temporals.dayOfWeekName(currentDate)}"></span>
+        <span class="text-gray-500 text-xs sm:text-sm mt-1" th:text="${#temporals.dayOfWeekName(currentDate)}"></span>
       </div>
-      <button type="button" id="openCalendarBtn" class="p-2 rounded-full hover:bg-gray-200">
+      <button type="button" id="openCalendarBtn" class="p-2 rounded-full hover:bg-gray-200 mx-1 flex-shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5m18 7.5v-7.5" />
         </svg>
       </button>
       <a th:href="@{/appointments/calendar/{workerId}/{serviceId}(workerId=${workerId}, serviceId=${serviceId}, date=${currentDate.plusDays(1)})}"
-         class="p-2 rounded-full hover:bg-gray-200">
+         class="p-2 rounded-full hover:bg-gray-200 mx-1 flex-shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
              stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
@@ -156,7 +186,7 @@
            onclick="selectTime(this)">
         <span th:text="${#temporals.format(time, 'HH:mm')}"></span>
       </div>
-      <div th:if="${#lists.isEmpty(availableTimes)}" class="col-span-3 text-center text-gray-500 p-8">
+      <div th:if="${#lists.isEmpty(availableTimes)}" class="col-span-2 sm:col-span-3 text-center text-gray-500 p-8">
         Няма свободни часове за тази дата.
       </div>
     </div>
@@ -168,7 +198,7 @@
     <input type="hidden" name="startTime" id="selectedStartTime">
     <div class="mt-6 text-center">
       <button type="submit"
-              class="inline-flex items-center justify-center px-8 py-4 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               id="bookBtn" disabled>
         Запази час
       </button>
@@ -221,6 +251,7 @@
 
   // Initialize Flatpickr with the custom locale
   document.addEventListener("DOMContentLoaded", function() {
+      // The Flatpickr initializer should be outside the change listener functions
       flatpickr("#openCalendarBtn", {
           dateFormat: "Y-m-d",
           defaultDate: currentDate,
@@ -240,13 +271,15 @@
   // Add event listeners to the dropdowns
   workerSelect.addEventListener('change', function() {
     const newWorkerId = this.value;
-    const currentServiceId = serviceSelect.value;
+    // Ensure serviceId is always available, use the currently selected one if the user hasn't changed it in this action
+    const currentServiceId = serviceSelect.value || /*[[${serviceId}]]*/ null;
     window.location.href = `/appointments/calendar/${newWorkerId}/${currentServiceId}?date=${currentDate}`;
   });
 
   serviceSelect.addEventListener('change', function() {
     const newServiceId = this.value;
-    const currentWorkerId = workerSelect.value;
+    // Ensure workerId is always available
+    const currentWorkerId = workerSelect.value || /*[[${workerId}]]*/ null;
     window.location.href = `/appointments/calendar/${currentWorkerId}/${newServiceId}?date=${currentDate}`;
   });
   /*]]>*/
