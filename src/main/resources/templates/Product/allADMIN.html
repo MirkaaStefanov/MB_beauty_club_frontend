@@ -223,183 +223,211 @@
 <script th:inline="javascript">
   document.addEventListener('DOMContentLoaded', () => {
 
-      // Notification logic
-      const notificationContainer = document.getElementById('notification-container');
-      const notificationBox = document.getElementById('notification-box');
-      const notificationTitle = document.getElementById('notification-title');
-      const notificationMessage = document.getElementById('notification-message');
-      const notificationIcon = document.getElementById('notification-icon');
+     // Notification logic (Keeping this as is)
+     const notificationContainer = document.getElementById('notification-container');
+     const notificationBox = document.getElementById('notification-box');
+     const notificationTitle = document.getElementById('notification-title');
+     const notificationMessage = document.getElementById('notification-message');
+     const notificationIcon = document.getElementById('notification-icon');
 
-      const successMessage = /*[[${successMessage}]]*/ '';
-      const errorMessage = /*[[${errorMessage}]]*/ '';
+     const successMessage = /*[[${successMessage}]]*/ '';
+     const errorMessage = /*[[${errorMessage}]]*/ '';
 
-      function showNotification(title, message, type) {
-          notificationTitle.textContent = title;
-          notificationMessage.textContent = message;
+     function showNotification(title, message, type) {
+         notificationTitle.textContent = title;
+         notificationMessage.textContent = message;
 
-          let iconPath;
-          let boxColor;
+         let iconPath;
+         let boxColor;
 
-          if (type === 'success') {
-              boxColor = 'bg-gray-100 text-gray-800';
-              iconPath = '<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75S17.385 21.75 12 21.75 2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.882L10.25 11.25l-1.5-1.5a.75.75 0 1 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l4-4Z" clip-rule="evenodd" />';
-              notificationBox.classList.remove('bg-red-50', 'text-red-700', 'bg-green-50', 'text-green-700');
-              notificationBox.classList.add(boxColor);
-          } else if (type === 'error') {
-              boxColor = 'bg-gray-100 text-gray-800';
-              iconPath = '<path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />';
-              notificationBox.classList.remove('bg-green-50', 'text-green-700', 'bg-red-50', 'text-red-700');
-              notificationBox.classList.add(boxColor);
-          }
-          notificationIcon.innerHTML = iconPath;
+         if (type === 'success') {
+             boxColor = 'bg-gray-100 text-gray-800';
+             iconPath = '<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75S17.385 21.75 12 21.75 2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.882L10.25 11.25l-1.5-1.5a.75.75 0 1 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l4-4Z" clip-rule="evenodd" />';
+             notificationBox.classList.remove('bg-red-50', 'text-red-700', 'bg-green-50', 'text-green-700');
+             notificationBox.classList.add(boxColor);
+         } else if (type === 'error') {
+             boxColor = 'bg-gray-100 text-gray-800';
+             iconPath = '<path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />';
+             notificationBox.classList.remove('bg-green-50', 'text-green-700', 'bg-red-50', 'text-red-700');
+             notificationBox.classList.add(boxColor);
+         }
+         notificationIcon.innerHTML = iconPath;
 
-          notificationBox.classList.remove('hidden');
-          setTimeout(() => {
-              notificationBox.classList.remove('opacity-0', 'translate-x-10');
-              notificationBox.classList.add('opacity-100', 'translate-x-0');
-          }, 100);
+         notificationBox.classList.remove('hidden');
+         setTimeout(() => {
+             notificationBox.classList.remove('opacity-0', 'translate-x-10');
+             notificationBox.classList.add('opacity-100', 'translate-x-0');
+         }, 100);
 
-          setTimeout(() => {
-              notificationBox.classList.remove('opacity-100', 'translate-x-0');
-              notificationBox.classList.add('opacity-0', 'translate-x-10');
-              setTimeout(() => {
-                  notificationBox.classList.add('hidden');
-              }, 300);
-          }, 3000);
-      }
+         setTimeout(() => {
+             notificationBox.classList.remove('opacity-100', 'translate-x-0');
+             notificationBox.classList.add('opacity-0', 'translate-x-10');
+             setTimeout(() => {
+                 notificationBox.classList.add('hidden');
+             }, 300);
+         }, 3000);
+     }
 
-      if (successMessage && successMessage.trim().length > 0) {
-          showNotification('Perfect', successMessage, 'success');
-      } else if (errorMessage && errorMessage.trim().length > 0) {
-          showNotification('Error Occurred', errorMessage, 'error');
-      }
+     if (successMessage && successMessage.trim().length > 0) {
+         showNotification('Perfect', successMessage, 'success');
+     } else if (errorMessage && errorMessage.trim().length > 0) {
+         showNotification('Error Occurred', errorMessage, 'error');
+     }
 
-      // Modal logic
-      const modal = document.getElementById('confirmation-modal');
-      const confirmButton = document.getElementById('modal-confirm');
-      const cancelButton = document.getElementById('modal-cancel');
-      let formToSubmit = null;
+     // Modal logic (Keeping this as is)
+     const modal = document.getElementById('confirmation-modal');
+     const confirmButton = document.getElementById('modal-confirm');
+     const cancelButton = document.getElementById('modal-cancel');
+     let formToSubmit = null;
 
-      document.querySelectorAll('.delete-button').forEach(button => {
-          button.addEventListener('click', (event) => {
-              event.preventDefault();
-              formToSubmit = button.closest('form');
-              modal.classList.remove('hidden');
-              modal.classList.add('flex');
-              document.body.style.overflow = 'hidden';
-          });
-      });
+     document.querySelectorAll('.delete-button').forEach(button => {
+         button.addEventListener('click', (event) => {
+             event.preventDefault();
+             formToSubmit = button.closest('form');
+             modal.classList.remove('hidden');
+             modal.classList.add('flex');
+             document.body.style.overflow = 'hidden';
+         });
+     });
 
-      confirmButton.addEventListener('click', () => {
-          if (formToSubmit) {
-              formToSubmit.submit();
-          }
-          modal.classList.add('hidden');
-          modal.classList.remove('flex');
-          document.body.style.overflow = 'auto';
-      });
+     confirmButton.addEventListener('click', () => {
+         if (formToSubmit) {
+             formToSubmit.submit();
+         }
+         modal.classList.add('hidden');
+         modal.classList.remove('flex');
+         document.body.style.overflow = 'auto';
+     });
 
-      cancelButton.addEventListener('click', () => {
-          modal.classList.add('hidden');
-          modal.classList.remove('flex');
-          document.body.style.overflow = 'auto';
-      });
+     cancelButton.addEventListener('click', () => {
+         modal.classList.add('hidden');
+         modal.classList.remove('flex');
+         document.body.style.overflow = 'auto';
+     });
 
+     // --- Filter Logic ---
+     const filterButtons = document.querySelectorAll('.filter-btn');
+     const productsTable = document.getElementById('productsTable');
+     // Select all product rows (tr elements) excluding the header row (thead)
+     const rows = Array.from(productsTable.querySelector('tbody').getElementsByTagName('tr'));
 
-      const filterButtons = document.querySelectorAll('.filter-btn');
-      const productsTable = document.getElementById('productsTable');
-      const rows = Array.from(productsTable.getElementsByTagName('tr')).slice(1); // Exclude the header row
+     filterButtons.forEach(button => {
+         button.addEventListener('click', () => {
+             // Toggle the active state of the clicked button
+             button.classList.toggle('bg-gray-800');
+             button.classList.toggle('text-white');
+             button.classList.toggle('bg-gray-200');
+             button.classList.toggle('text-gray-700');
 
-      filterButtons.forEach(button => {
-          button.addEventListener('click', () => {
-              // Toggle the active state of the clicked button
-              button.classList.toggle('bg-gray-800');
-              button.classList.toggle('text-white');
-              button.classList.toggle('bg-gray-200');
-              button.classList.toggle('text-gray-700');
+             // Run the filtering logic
+             applyFilters();
+         });
+     });
 
-              // Run the filtering logic
-              applyFilters();
-          });
-      });
+     function applyFilters() {
+         // Clear any text search inputs
+         document.getElementById('searchInput').value = '';
+         document.getElementById('barcodeInput').value = '';
 
-      function applyFilters() {
-          const activeFilters = document.querySelectorAll('.filter-btn.bg-gray-800');
-          const activeFilterTypes = Array.from(activeFilters).map(btn => btn.getAttribute('data-filter'));
+         const activeFilters = document.querySelectorAll('.filter-btn.bg-gray-800');
+         const activeFilterTypes = Array.from(activeFilters).map(btn => btn.getAttribute('data-filter'));
 
-          // Clear any text search inputs
-          document.getElementById('searchInput').value = '';
-          document.getElementById('barcodeInput').value = '';
+         rows.forEach(row => {
+             const isPromotion = row.getAttribute('data-promotion') === 'true';
+             const isForSale = row.getAttribute('data-for-sale') === 'true';
+             // The value is a string, so parse it to an integer for numerical comparison
+             const quantity = parseInt(row.getAttribute('data-quantity'), 10);
 
-          rows.forEach(row => {
-              const isPromotion = row.getAttribute('data-promotion') === 'true';
-              const isForSale = row.getAttribute('data-for-sale') === 'true';
-              const quantity = parseInt(row.getAttribute('data-quantity'));
+             // Start with the assumption that the row should be shown.
+             let shouldShow = true;
 
-              let shouldShow = true;
+             // Check if ANY active filter requires this row to be hidden.
+             // If the filter is active, the row MUST satisfy the filter's condition.
 
-              if (activeFilterTypes.includes('promotion') && !isPromotion) {
-                  shouldShow = false;
-              }
-              if (activeFilterTypes.includes('forSale') && !isForSale) {
-                  shouldShow = false;
-              }
-              if (activeFilterTypes.includes('lowQuantity') && quantity >= 10) {
-                  shouldShow = false;
-              }
+             if (activeFilterTypes.includes('promotion') && !isPromotion) {
+                 // If 'promotion' is active but the product is NOT on promotion, hide it.
+                 shouldShow = false;
+             }
 
-              row.style.display = shouldShow ? '' : 'none';
-          });
-      }
+             if (activeFilterTypes.includes('forSale') && !isForSale) {
+                 // If 'forSale' is active but the product is NOT for sale, hide it.
+                 shouldShow = false;
+             }
 
-      window.clearFilters = function() {
-          filterButtons.forEach(button => {
-              button.classList.remove('bg-gray-800', 'text-white');
-              button.classList.add('bg-gray-200', 'text-gray-700');
-          });
-          rows.forEach(row => row.style.display = '');
-      }
+             if (activeFilterTypes.includes('lowQuantity') && quantity >= 10) {
+                 // If 'lowQuantity' is active but the quantity is NOT low (i.e., >= 10), hide it.
+                 shouldShow = false;
+             }
 
-      window.filterProducts = function() {
-          clearFilters();
-          let input = document.getElementById("searchInput");
-          let filter = input.value.toLowerCase();
-          let tr = productsTable.getElementsByTagName("tr");
+             // Important: If multiple filters are active, the product must satisfy ALL of them.
+             // The current logic achieves this by setting shouldShow to false if any active filter's condition is not met.
 
-          for (let i = 1; i < tr.length; i++) {
-              let nameTd = tr[i].getElementsByTagName("td")[1];
-              let descTd = tr[i].getElementsByTagName("td")[2];
-              if (nameTd || descTd) {
-                  let nameText = nameTd.textContent || nameTd.innerText;
-                  let descText = descTd.textContent || descText.innerText;
-                  if (nameText.toLowerCase().indexOf(filter) > -1 || descText.toLowerCase().indexOf(filter) > -1) {
-                      tr[i].style.display = "";
-                  } else {
-                      tr[i].style.display = "none";
-                  }
-              }
-          }
-      }
+             row.style.display = shouldShow ? '' : 'none';
+         });
+     }
 
-      window.searchByBarcode = function() {
-          clearFilters();
-          let input = document.getElementById("barcodeInput");
-          let filter = input.value.trim();
-          let tr = productsTable.getElementsByTagName("tr");
+     // A function to reset filters and show all products
+     window.clearFilters = function() {
+         filterButtons.forEach(button => {
+             button.classList.remove('bg-gray-800', 'text-white');
+             button.classList.add('bg-gray-200', 'text-gray-700');
+         });
+         document.getElementById('searchInput').value = ''; // Also clear search inputs
+         document.getElementById('barcodeInput').value = '';
+         rows.forEach(row => row.style.display = '');
+     }
 
-          for (let i = 1; i < tr.length; i++) {
-              let barcodeTd = tr[i].getElementsByTagName("td")[6];
-              if (barcodeTd) {
-                  let barcodeText = barcodeTd.textContent || barcodeTd.innerText;
-                  if (barcodeText.indexOf(filter) > -1) {
-                      tr[i].style.display = "";
-                  } else {
-                      tr[i].style.display = "none";
-                  }
-              }
-          }
-      }
-  });
+     // --- Search Logic ---
+
+     // Search by Name or Description (Column indices 1 and 2)
+     window.filterProducts = function() {
+         clearFilters(); // Clear filters when starting a text search
+         let input = document.getElementById("searchInput");
+         let filter = input.value.toLowerCase();
+         let tr = productsTable.getElementsByTagName("tr");
+
+         for (let i = 1; i < tr.length; i++) {
+             let nameTd = tr[i].getElementsByTagName("td")[1];
+             let descTd = tr[i].getElementsByTagName("td")[2];
+             if (nameTd || descTd) {
+                 let nameText = nameTd.textContent || nameTd.innerText;
+                 let descText = descTd.textContent || descTd.innerText;
+
+                 // Show if either name or description contains the filter text
+                 if (nameText.toLowerCase().indexOf(filter) > -1 || descText.toLowerCase().indexOf(filter) > -1) {
+                     tr[i].style.display = "";
+                 } else {
+                     tr[i].style.display = "none";
+                 }
+             }
+         }
+     }
+
+     // Search by Barcode (Corrected column index)
+     window.searchByBarcode = function() {
+         clearFilters(); // Clear filters when starting a barcode search
+         let input = document.getElementById("barcodeInput");
+         let filter = input.value.trim();
+         let tr = productsTable.getElementsByTagName("tr");
+
+         for (let i = 1; i < tr.length; i++) {
+             // Barcode is the 8th column in the table, which is index 7 (0-based)
+             let barcodeTd = tr[i].getElementsByTagName("td")[7];
+             if (barcodeTd) {
+                 let barcodeText = barcodeTd.textContent || barcodeTd.innerText;
+
+                 // Use a strict equality check for exact barcode match,
+                 // but for partial/starts-with search, indexOf is fine.
+                 // Assuming partial match is desired, like for a live search as you type.
+                 if (barcodeText.indexOf(filter) > -1) {
+                     tr[i].style.display = "";
+                 } else {
+                     tr[i].style.display = "none";
+                 }
+             }
+         }
+     }
+ });
 </script>
 </body>
 </html>
