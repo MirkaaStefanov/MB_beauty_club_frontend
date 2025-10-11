@@ -21,50 +21,7 @@
             font-family: 'Playfair Display', serif;
         }
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            padding: 1rem;
-            background-color: #fff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .grid-item {
-            padding: 1rem;
-            text-align: center;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-
-        .grid-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Specific colors for different statuses */
-        .grid-item.booked-confirmed {
-            background-color: #1a202c; /* Black for CONFIRMED */
-            color: #fff;
-        }
-
-        .grid-item.booked-pending {
-            background-color: #f97316; /* Orange for PENDING */
-            color: #fff;
-        }
-
-        .grid-item.booked-cancelled {
-             background-color: #9ca3af; /* Gray for CANCELLED */
-            color: #fff;
-        }
-
-        .grid-item.free {
-            background-color: #fff;
-            color: #333;
-        }
+        /* Grid styling is now handled by Tailwind classes directly in the HTML */
 
         .search-select {
             position: relative;
@@ -110,7 +67,6 @@
     <p class="text-lg text-center mb-12 text-gray-700"
        th:text="${'За дата: ' + #temporals.format(currentDate, 'dd MMMM yyyy')}"></p>
 
-    <!-- Navigation for dates -->
     <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
         <div class="flex justify-between items-center mb-4">
             <a th:if="${currentDate.isAfter(today)}"
@@ -151,33 +107,38 @@
             <p th:text="${notAvailableReason}"></p>
         </div>
 
-        <div th:unless="${isNotAvailable}" class="grid-container">
+        <div th:unless="${isNotAvailable}" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 p-1">
             <div th:each="slot : ${timeSlots}"
                  th:with="appointment=${slot.appointment}"
-                 class="p-4 rounded-lg shadow-md cursor-pointer transition duration-200 ease-in-out transform hover:scale-105 grid-item"
+                 class="flex flex-col justify-center items-center text-center p-3 sm:p-4 rounded-lg shadow-sm cursor-pointer transition duration-200 hover:-translate-y-1 hover:shadow-lg"
                  th:classappend="${appointment != null} ?
-                                 ( ${appointment.status.name() == 'CONFIRMED' ? 'booked-confirmed' :
-                                    (appointment.status.name() == 'PENDING' ? 'booked-pending' : 'booked-cancelled')} ) :
-                                'free'"
+                                 ( ${appointment.status.name() == 'CONFIRMED' ? 'bg-gray-800 text-white' :
+                                    (appointment.status.name() == 'PENDING' ? 'bg-orange-500 text-white' : 'bg-gray-400 text-white')} ) :
+                                'bg-white text-gray-700 border border-gray-300'"
                  th:data-slot-id="${appointment != null} ? ${appointment.id} : 'FREE-' + ${#temporals.format(slot.time, 'HH:mm')}"
                  onclick="openSlotModal(this)">
-                <span class="font-bold text-lg" th:text="${#temporals.format(slot.time, 'HH:mm')}"></span>
-                <div th:if="${appointment != null}" class="mt-2 text-sm">
-                    <p th:text="${'Клиент: ' + (appointment.user != null ? appointment.user.name : appointment.username)}"></p>
-                    <p th:text="${'Услуга: ' + appointment.service.name}"></p>
-                    <p th:text="${'Статус: ' + appointment.status.name()}"></p>
+
+                <span class="font-bold text-lg sm:text-xl" th:text="${#temporals.format(slot.time, 'HH:mm')}"></span>
+
+                <div th:if="${appointment != null}" class="mt-1 text-xs sm:text-sm w-full">
+                    <p class="font-semibold truncate"
+                       th:text="${appointment.user != null ? appointment.user.name : appointment.username}"
+                       th:title="${appointment.user != null ? appointment.user.name : appointment.username}"></p>
+                    <p class="opacity-80 truncate"
+                       th:text="${appointment.service.name}"
+                       th:title="${appointment.service.name}"></p>
                 </div>
-                <div th:if="${appointment == null}" class="mt-2 text-sm">
-                    <p>Свободен час</p>
+
+                <div th:if="${appointment == null}" class="mt-1 text-sm text-gray-500">
+                    <p>Свободен</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal for appointment info / actions -->
-<div id="slotModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-gray-100 p-8 rounded-xl shadow-xl w-96 max-w-sm relative">
+<div id="slotModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-gray-100 p-8 rounded-xl shadow-xl w-full max-w-sm relative">
         <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -186,7 +147,6 @@
         <h2 class="text-2xl font-bold playfair mb-6" id="modalTitle"></h2>
         <div id="modalContent" class="mb-4"></div>
         <div class="flex justify-end gap-4 mt-6" id="modalButtons">
-            <!-- Buttons will be dynamically added here -->
         </div>
     </div>
 </div>
