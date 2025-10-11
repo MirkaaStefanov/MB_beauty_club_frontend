@@ -119,14 +119,14 @@
                             </div>
                             <span th:unless="${product.promotion}" class="text-sm font-bold mb-1"
                                   th:text="${#numbers.formatDecimal(product.price, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
-                            <div th:if="${product.availableQuantity > 0}">
-                                <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post">
-                                    <button type="submit" class="mt-1 px-3 py-1 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-xs">Купи</button>
-                                </form>
-                            </div>
-                            <div th:unless="${product.availableQuantity > 0}">
-                                <span class="mt-1 px-3 py-1 text-xs text-gray-500 rounded-full border border-gray-400">Изчерпан</span>
-                            </div>
+<!--                            <div th:if="${product.availableQuantity > 0}">-->
+<!--                                <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post">-->
+<!--                                    <button type="submit" class="mt-1 px-3 py-1 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-xs">Купи</button>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                            <div th:unless="${product.availableQuantity > 0}">-->
+<!--                                <span class="mt-1 px-3 py-1 text-xs text-gray-500 rounded-full border border-gray-400">Изчерпан</span>-->
+<!--                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -172,17 +172,17 @@
                                 </div>
                                 <span th:unless="${product.promotion}" class="text-sm font-bold mb-1"
                                       th:text="${#numbers.formatDecimal(product.price, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
-                                <div th:if="${product.availableQuantity > 0}">
-                                    <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post">
-                                        <button type="submit"
-                                                class="mt-1 px-3 py-1 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-xs">
-                                            Купи
-                                        </button>
-                                    </form>
-                                </div>
-                                <div th:unless="${product.availableQuantity > 0}">
-                                    <span class="mt-1 px-3 py-1 text-xs text-gray-500 rounded-full border border-gray-400">Изчерпан</span>
-                                </div>
+<!--                                <div th:if="${product.availableQuantity > 0}">-->
+<!--                                    <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post">-->
+<!--                                        <button type="submit"-->
+<!--                                                class="mt-1 px-3 py-1 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-xs">-->
+<!--                                            Купи-->
+<!--                                        </button>-->
+<!--                                    </form>-->
+<!--                                </div>-->
+<!--                                <div th:unless="${product.availableQuantity > 0}">-->
+<!--                                    <span class="mt-1 px-3 py-1 text-xs text-gray-500 rounded-full border border-gray-400">Изчерпан</span>-->
+<!--                                </div>-->
                             </div>
                         </div>
                     </div>
