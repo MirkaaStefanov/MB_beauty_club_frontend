@@ -131,7 +131,7 @@
         <option value="" disabled>Избери услуга</option>
         <option th:each="service : ${services}"
                 th:value="${service.id}"
-                th:text="${service.name + ' - ' + #numbers.formatDecimal(service.price, 0, 'COMMA', 2, 'POINT') + ' лв.'}"
+                th:text="${service.name}"
                 th:selected="${service.id.equals(serviceId)}">
         </option>
       </select>
@@ -159,7 +159,7 @@
       <div class="flex flex-col items-center justify-center flex-grow mx-1 min-h-[3.25rem]">
         <span class="hidden sm:block font-bold text-lg playfair sm:text-xl"
               th:text="${#temporals.format(currentDate, 'dd MMMM yyyy')}"></span>
-        <span class="text-lg font-medium sm:font-normal sm:text-sm sm:text-gray-500 sm:mt-1"
+        <span class="text-sm font-medium sm:font-normal sm:text-sm sm:text-gray-500 sm:mt-1"
               th:text="${#temporals.dayOfWeekName(currentDate)}"></span>
       </div>
       <button type="button" id="openCalendarBtn" class="p-2 rounded-full hover:bg-gray-200 mx-1 flex-shrink-0">
