@@ -64,6 +64,10 @@ public class AppointmentsController {
 
 
         List<WorkerDTO> workers = workerClient.getWorkersByCategory(serviceDTO.getCategory(), token);
+
+        if(workers.size()==1){
+            return "redirect:/appointments/calendar/"+workers.get(0).getId()+"/"+id;
+        }
         model.addAttribute("workers", workers);
         model.addAttribute("category", serviceDTO.getCategory());
         model.addAttribute("serviceId", id);
@@ -226,6 +230,10 @@ public class AppointmentsController {
 
         // Now you can safely save the appointment.
         appointmentClient.bookAppointment(appointmentDTO, token);
+
+        if("WORKER".equals(role)){
+            return "redirect:/appointments/worker-calendar?date="+appointmentDTO.getStartTime().toLocalDate();
+        }
         return "redirect:/appointments/my-appointments";
     }
 
@@ -268,6 +276,7 @@ public class AppointmentsController {
 
 
         appointmentClient.deleteAppointment(id, token);
+
         return "redirect:/appointments/my-appointments";
     }
 

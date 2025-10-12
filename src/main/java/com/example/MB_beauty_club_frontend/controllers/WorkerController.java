@@ -97,12 +97,15 @@ public class WorkerController {
         if (userRole == null || !userRole.equals("ADMIN")) {
             return "redirect:/";
         }
+        WorkerDTO existing = workerClient.findById(id, token);
+        workerDTO.setUser(existing.getUser());
 
         workerClient.update(id, workerDTO, token);
         return "redirect:/workers";
     }
+
     @PostMapping("/delete/{id}")
-    public String delete(@PathVariable UUID id, HttpServletRequest request){
+    public String delete(@PathVariable UUID id, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String userRole = (String) request.getSession().getAttribute("sessionRole");
 
