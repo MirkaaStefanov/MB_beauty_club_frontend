@@ -18,7 +18,26 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/**") // Apply to all URLs
-                .excludePathPatterns("/login", "/css/**", "/js/**"); // Exclude the login page and static resources
+                .addPathPatterns("/**") // Apply to all paths...
+                .excludePathPatterns(   // ...but EXCLUDE the following:
+                        // --- Static Resources ---
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/favicon.ico",
+                        "/apple-touch-icon.png",
+
+                        // --- Public Application Pages ---
+                        "/", // Home page
+                        "/auth/login",
+                        "/auth/register",
+                        "/login/google",
+                        "/process-oauth2",
+                        "/continue-action",
+                        "/products",
+                        "/services",
+                        "/appointments/calendar/**", // Use wildcards for dynamic paths
+                        "/appointments/select_worker/**"
+                );
     }
 }

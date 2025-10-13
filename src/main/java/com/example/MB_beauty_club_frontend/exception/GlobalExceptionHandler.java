@@ -17,6 +17,6 @@ public class GlobalExceptionHandler {
         request.setAttribute("javax.servlet.error.status_code", HttpStatus.INTERNAL_SERVER_ERROR.value());
         request.setAttribute("javax.servlet.error.message", ex.getMessage());
 
-        return "redirect:/";
+        return "forward:/error";
     }
 }
