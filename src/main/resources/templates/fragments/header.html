@@ -138,14 +138,20 @@
 
         let links = [];
 
-        if (sessionRole === 'USER' || sessionToken === null) {
+        if (sessionToken === null) {
+            links = [
+                { href: '/', text: 'Начало' },
+                { href: '/#services', text: 'Услуги' },
+                { href: '/#products', text: 'Продукти' },
+            ];
+        } else if(sessionRole === 'USER'){
             links = [
                 { href: '/', text: 'Начало' },
                 { href: '/#services', text: 'Услуги' },
                 { href: '/#products', text: 'Продукти' },
                 { href: '/appointments/my-appointments', text: 'Часове' },
             ];
-        } else if (sessionRole === 'ADMIN') {
+        }else if (sessionRole === 'ADMIN') {
             links = [
                 { href: '/products', text: 'Продукти' },
                 { href: '/orders', text: 'Поръчки' },
