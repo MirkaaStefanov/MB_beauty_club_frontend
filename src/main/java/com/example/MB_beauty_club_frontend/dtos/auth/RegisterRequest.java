@@ -18,4 +18,6 @@ public class RegisterRequest {
     private String surName;
     private Role role = Role.USER;
     private Provider provider = Provider.LOCAL;
+    private String phoneNumber;
+
 }

@@ -28,8 +28,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/apple-touch-icon.png",
 
                         // --- Public Application Pages ---
-                        "/", // Home page
+                        "/",
+                        "/error",// Home page
                         "/auth/login",
+                        "/auth/logout",
                         "/auth/register",
                         "/login/google",
                         "/process-oauth2",
