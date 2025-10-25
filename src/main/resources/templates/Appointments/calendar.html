@@ -182,7 +182,6 @@
 
     <div th:unless="${isNotAvailable}" class="grid-container">
       <div th:each="time : ${availableTimes}"
-           th:classappend="${time.isBefore(#temporals.createNow().toLocalTime()) and currentDate.isEqual(#temporals.createNow().toLocalDate())} ? 'disabled' : ''"
            class="grid-item"
            th:data-time="${time}"
            onclick="selectTime(this)">
@@ -253,7 +252,7 @@
 
   // Initialize Flatpickr with the custom locale
   document.addEventListener("DOMContentLoaded", function() {
-      // The Flatpickr initializer should be outside the change listener functions
+      // The Flatpickr initializer
       flatpickr("#openCalendarBtn", {
           dateFormat: "Y-m-d",
           defaultDate: currentDate,
@@ -264,7 +263,49 @@
               }
           }
       });
-  });
+
+      // ==========================================================
+      // CHANGE 2: Added this client-side function to check time
+      // ==========================================================
+      function disablePastTimeSlots() {
+          // 1. Get the user's current local date and time (from their browser)
+          const now = new Date();
+
+          // 2. Format today's date as YYYY-MM-DD to compare
+          const yyyy = now.getFullYear();
+          const mm = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-11
+          const dd = String(now.getDate()).padStart(2, '0');
+          const todayStr = `${yyyy}-${mm}-${dd}`;
+
+          // 3. Only run this check if the calendar page is for "today"
+          //    (currentDate comes from Thymeleaf)
+          if (currentDate === todayStr) {
+
+              // 4. Get the current time in total minutes
+              const nowInMinutes = now.getHours() * 60 + now.getMinutes();
+
+              // 5. Loop over all time slot elements
+              document.querySelectorAll('.grid-item[data-time]').forEach(slot => {
+                  const slotTime = slot.dataset.time; // e.g., "10:00", "14:30"
+                  const [hours, minutes] = slotTime.split(':');
+
+                  // 6. Convert the slot's time to total minutes
+                  const slotTimeInMinutes = parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+
+                  // 7. If the slot time is before now, add the 'disabled' class
+                  if (slotTimeInMinutes < nowInMinutes) {
+                      slot.classList.add('disabled');
+                  }
+              });
+          }
+      }
+
+      // Run the function as soon as the page loads
+      disablePastTimeSlots();
+      // === END OF NEW CODE ======================================
+
+
+  }); // <- This closing tag was missing in your original file for the DOMContentLoaded listener
 
   // Get references to the dropdowns
   const workerSelect = document.getElementById('workerSelect');
