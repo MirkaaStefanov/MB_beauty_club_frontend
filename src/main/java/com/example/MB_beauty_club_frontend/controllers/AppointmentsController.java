@@ -65,8 +65,8 @@ public class AppointmentsController {
 
         List<WorkerDTO> workers = workerClient.getWorkersByCategory(serviceDTO.getCategory(), token);
 
-        if(workers.size()==1){
-            return "redirect:/appointments/calendar/"+workers.get(0).getId()+"/"+id;
+        if (workers.size() == 1) {
+            return "redirect:/appointments/calendar/" + workers.get(0).getId() + "/" + id;
         }
         model.addAttribute("workers", workers);
         model.addAttribute("category", serviceDTO.getCategory());
@@ -173,12 +173,13 @@ public class AppointmentsController {
             return "redirect:/appointments/worker-calendar?date=" + LocalDate.now();
         }
 
-        UUID workerId = workerClient.findAuthenticated(token).getId();
+        WorkerDTO authenticatedWorker = workerClient.findAuthenticated(token);
+        UUID workerId = authenticatedWorker.getId();
 
         model.addAttribute("currentDate", date);
         model.addAttribute("today", LocalDate.now());
 
-        List<ServiceDTO> services = serviceClient.getAllServices(token);
+        List<ServiceDTO> services = serviceClient.getServicesByCategory(authenticatedWorker.getWorkerCategory(), token);
         model.addAttribute("services", services);
 
         List<WorkingHoursDTO> workerWorkingHours = workingHoursClient.getWorkingHoursByWorkerId(workerId, token);
@@ -231,8 +232,8 @@ public class AppointmentsController {
         // Now you can safely save the appointment.
         appointmentClient.bookAppointment(appointmentDTO, token);
 
-        if("WORKER".equals(role)){
-            return "redirect:/appointments/worker-calendar?date="+appointmentDTO.getStartTime().toLocalDate();
+        if ("WORKER".equals(role)) {
+            return "redirect:/appointments/worker-calendar?date=" + appointmentDTO.getStartTime().toLocalDate();
         }
         return "redirect:/appointments/my-appointments";
     }
@@ -252,11 +253,11 @@ public class AppointmentsController {
     }
 
     @PostMapping("/updateStatus/{id}")
-    public String updateStatus(@PathVariable Long id, @RequestParam AppointmentStatus status, HttpServletRequest request){
+    public String updateStatus(@PathVariable Long id, @RequestParam AppointmentStatus status, HttpServletRequest request) {
         String token = (String) request.getSession().getAttribute("sessionToken");
         String role = (String) request.getSession().getAttribute("sessionRole");
 
-        if(!"WORKER".equals(role)){
+        if (!"WORKER".equals(role)) {
             return "redirect:/";
         }
 
