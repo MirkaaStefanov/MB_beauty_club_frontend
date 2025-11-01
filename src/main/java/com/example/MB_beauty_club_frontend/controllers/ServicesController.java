@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +33,11 @@ public class ServicesController {
         String token = (String) request.getSession().getAttribute("sessionToken");
 
         List<ServiceDTO> services = serviceClient.getAllServices(token);
+
+        if (services != null) {
+            services.sort(Comparator.comparing(ServiceDTO::getName));
+        }
+
         model.addAttribute("services", services);
 
         return "Services/show";
@@ -47,6 +53,14 @@ public class ServicesController {
         }
 
         List<ServiceDTO> existingServices = serviceClient.getAllServices(token);
+
+        if (existingServices != null) {
+            existingServices.sort(
+                    Comparator.comparing(ServiceDTO::getCategory) // 1. Sort by category
+                            .thenComparing(ServiceDTO::getName, String.CASE_INSENSITIVE_ORDER) // 2. Then by name (ignoring case)
+            );
+        }
+
         model.addAttribute("services", existingServices);
         model.addAttribute("categories", Arrays.asList(WorkerCategory.values()));
 
