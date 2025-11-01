@@ -51,13 +51,20 @@
         color: #fff;
         border-color: #374151;
     }
+
+    .category-section {
+        scroll-margin-top: 5rem;
+    }
   </style>
 </head>
 <body class="overflow-x-hidden min-h-screen">
 
 <div th:insert="~{fragments/header :: main-header}"></div>
 
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+<!-- START: Reduced padding from pt-32 to pt-24 -->
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+  <!-- END: Change -->
+
   <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-4 sm:mb-0">Нашите услуги</h1>
     <a th:if="${session.sessionRole == 'ADMIN'}" th:href="@{/services/edit}"
@@ -82,24 +89,35 @@
 
   <section class="py-8 sm:py-16">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+
       <div th:each="category : ${T(com.example.MB_beauty_club_frontend.enums.WorkerCategory).values()}"
            th:id="${category.toString()}"
            class="mb-12 category-section">
+
         <h2 class="text-3xl font-bold playfair mb-6 text-center">
           <span th:text="${category.getDescription()}"></span>
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div th:each="service : ${services}" th:if="${service.category.equals(category)}"
-               class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow flex flex-col">
-            <h3 class="text-2xl font-bold playfair mb-2" th:text="${service.name}"></h3>
-            <p class="text-gray-700 mb-4" th:text="${service.description}"></p>
-            <div class="flex-grow"></div> <div class="flex justify-end items-center"> <p class="text-sm text-gray-600" th:text="${service.duration + ' минути'}"></p>
-          </div>
-            <div class="mt-4">
-              <a th:href="@{'/appointments/select_worker/' + ${service.id}}"
-                 class="block w-full text-center px-6 py-3 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors">
-                Запази час
-              </a>
+
+        <div class="bg-white/60 backdrop-blur-sm rounded-xl shadow-md p-6 sm:p-8">
+          <div class="space-y-4">
+
+            <div th:each="service : ${services}" th:if="${service.category.equals(category)}"
+                 class="flex flex-col sm:flex-row sm:items-center sm:justify-between py-6 border-b border-gray-300 last:border-b-0">
+
+              <div class="flex-grow mb-4 sm:mb-0 sm:pr-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2" th:text="${service.name}"></h3>
+                <p class="text-gray-700 text-sm" th:text="${service.description}"></p>
+              </div>
+
+              <div class="flex-shrink-0 flex flex-row items-center justify-between sm:justify-end sm:gap-5 w-full sm:w-auto">
+                <span class="inline-block bg-gray-200 text-gray-900 text-xs font-semibold px-3 py-1 rounded-full"
+                      th:text="${service.duration + ' минути'}">
+                </span>
+                <a th:href="@{'/appointments/select_worker/' + ${service.id}}"
+                   class="text-center px-5 py-2 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors">
+                  Запази час
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -112,6 +130,7 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
+      // No changes needed to the JavaScript
       const categories = document.querySelectorAll('.category-section');
       const navLinks = document.querySelectorAll('.filter-buttons a');
 
@@ -156,7 +175,7 @@
               const targetId = link.getAttribute('href').substring(1);
               const targetElement = document.getElementById(targetId);
               if (targetElement) {
-                  // Scroll to the element
+                  // This will now respect the scroll-margin-top from the CSS
                   targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }
           });

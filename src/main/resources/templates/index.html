@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MB Beauty Club</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -48,66 +48,80 @@
         </div>
     </section>
 
-    <section class="py-16 sm:py-24 bg-white" id="services">
+    <!-- START: Improved Services Section -->
+    <section class="py-16 sm:py-24 bg-white" id="services"> <!-- Reverted to bg-white -->
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-12">Нашите Услуги</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                <a th:href="@{/services#HAIRSTYLING}" class="group flex flex-col bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl text-center">
-                    <h3 class="text-2xl font-semibold mb-4">Подстригване</h3>
+
+                <!-- Service Card 1 -->
+                <a th:href="@{/services#HAIRSTYLING}" class="group flex flex-col bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl text-center"> <!-- Reverted to bg-[#F8F4F2] -->
+                    <h3 class="text-2xl font-semibold mb-4">Подстригване</h3> <!-- Reverted to default font (Poppins) -->
                     <p class="text-gray-700">Професионални подстригвания за мъже и жени, съобразени с вашите желания и стил.</p>
                     <div class="flex-grow"></div>
+                    <!-- New "Outline" Button -->
                     <div class="mt-6">
-                        <span class="inline-block px-8 py-3 bg-gray-800 text-white font-semibold rounded-full shadow-md group-hover:bg-gray-700 transition-colors">
+                        <span class="inline-block px-8 py-3 border-2 border-gray-800 text-gray-800 font-semibold rounded-full transition-colors group-hover:bg-gray-800 group-hover:text-white">
                             Виж повече
                         </span>
                     </div>
                 </a>
+
+                <!-- Service Card 2 -->
                 <a th:href="@{/services#NAIL}" class="group flex flex-col bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl text-center">
                     <h3 class="text-2xl font-semibold mb-4">Маникюр и Педикюр</h3>
                     <p class="text-gray-700">Пълен набор от услуги за грижа за ноктите, включително гел лак и декорации.</p>
                     <div class="flex-grow"></div>
                     <div class="mt-6">
-                        <span class="inline-block px-8 py-3 bg-gray-800 text-white font-semibold rounded-full shadow-md group-hover:bg-gray-700 transition-colors">
+                        <span class="inline-block px-8 py-3 border-2 border-gray-800 text-gray-800 font-semibold rounded-full transition-colors group-hover:bg-gray-800 group-hover:text-white">
                             Виж повече
                         </span>
                     </div>
                 </a>
+
+                <!-- Service Card 3 -->
                 <a th:href="@{/services#MAKEUP}" class="group flex flex-col bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl text-center">
                     <h3 class="text-2xl font-semibold mb-4">Грим</h3>
                     <p class="text-gray-700">Професионален грим за всеки повод - от ежедневен до сватбен.</p>
                     <div class="flex-grow"></div>
                     <div class="mt-6">
-                        <span class="inline-block px-8 py-3 bg-gray-800 text-white font-semibold rounded-full shadow-md group-hover:bg-gray-700 transition-colors">
+                        <span class="inline-block px-8 py-3 border-2 border-gray-800 text-gray-800 font-semibold rounded-full transition-colors group-hover:bg-gray-800 group-hover:text-white">
                             Виж повече
                         </span>
                     </div>
                 </a>
+
+                <!-- Service Card 4 -->
                 <a th:href="@{/services#LASH}" class="group flex flex-col bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl text-center">
                     <h3 class="text-2xl font-semibold mb-4">Миглопластика</h3>
                     <p class="text-gray-700">Удължаване и сгъстяване на мигли за по-изразителен поглед.</p>
                     <div class="flex-grow"></div>
                     <div class="mt-6">
-                        <span class="inline-block px-8 py-3 bg-gray-800 text-white font-semibold rounded-full shadow-md group-hover:bg-gray-700 transition-colors">
+                        <span class="inline-block px-8 py-3 border-2 border-gray-800 text-gray-800 font-semibold rounded-full transition-colors group-hover:bg-gray-800 group-hover:text-white">
                             Виж повече
                         </span>
                     </div>
                 </a>
+
+                <!-- Service Card 5 -->
                 <a th:href="@{/services#MASSAGE}" class="group flex flex-col bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl text-center">
                     <h3 class="text-2xl font-semibold mb-4">Масаж</h3>
                     <p class="text-gray-700">Релаксиращи и възстановителни масажи за тяло.</p>
                     <div class="flex-grow"></div>
                     <div class="mt-6">
-                        <span class="inline-block px-8 py-3 bg-gray-800 text-white font-semibold rounded-full shadow-md group-hover:bg-gray-700 transition-colors">
+                        <span class="inline-block px-8 py-3 border-2 border-gray-800 text-gray-800 font-semibold rounded-full transition-colors group-hover:bg-gray-800 group-hover:text-white">
                             Виж повече
                         </span>
                     </div>
                 </a>
+
+                <!-- Service Card 6 (All) -->
                 <a th:href="@{/services}" class="group flex flex-col items-center justify-center bg-[#F8F4F2] p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl text-center">
                     <h3 class="text-2xl font-semibold mb-4">Всички услуги</h3>
                     <p class="text-gray-700">Разгледайте пълния списък с нашите предложения.</p>
                     <div class="flex-grow"></div>
                     <div class="mt-6">
-                         <span class="inline-block px-8 py-3 bg-gray-800 text-white font-semibold rounded-full shadow-md group-hover:bg-gray-700 transition-colors">
+                         <span class="inline-block px-8 py-3 border-2 border-gray-800 text-gray-800 font-semibold rounded-full transition-colors group-hover:bg-gray-800 group-hover:text-white">
                              Разгледай
                          </span>
                     </div>
@@ -115,6 +129,8 @@
             </div>
         </div>
     </section>
+    <!-- END: Improved Services Section -->
+
     <section class="relative py-16 sm:py-24 bg-[#EBE3D5]" id="products">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold playfair mb-12">Наши Продукти</h2>
@@ -154,14 +170,14 @@
                             </div>
                             <span th:unless="${product.promotion}" class="text-sm font-bold mb-1"
                                   th:text="${#numbers.formatDecimal(product.price, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
-<!--                             <div th:if="${product.availableQuantity > 0}">-->
-<!--                             <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post">-->
-<!--                             <button type="submit" class="mt-1 px-3 py-1 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-xs">Купи</button>-->
-<!--                             </form>-->
-<!--                             </div>-->
-<!--                             <div th:unless="${product.availableQuantity > 0}">-->
-<!--                             <span class="mt-1 px-3 py-1 text-xs text-gray-500 rounded-full border border-gray-400">Изчерпан</span>-->
-<!--                             </div>-->
+                            <!--                             <div th:if="${product.availableQuantity > 0}">-->
+                            <!--                             <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post">-->
+                            <!--                             <button typeG="submit" class="mt-1 px-3 py-1 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-xs">Купи</button>-->
+                            <!--                             </form>-->
+                            <!--                             </div>-->
+                            <!--                             <div th:unless="${product.availableQuantity > 0}">-->
+                            <!--                             <span class="mt-1 px-3 py-1 text-xs text-gray-500 rounded-full border border-gray-400">Изчерпан</span>-->
+                            <!--                             </div>-->
                         </div>
                     </div>
                 </div>
@@ -207,14 +223,14 @@
                                 </div>
                                 <span th:unless="${product.promotion}" class="text-sm font-bold mb-1"
                                       th:text="${#numbers.formatDecimal(product.price, 1, 2) + ' лв. / ' + #numbers.formatDecimal(product.euroPrice, 1, 2) + ' €'}"></span>
-<!--                                 <div th:if="${product.availableQuantity > 0}">-->
-<!--                                 <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post">-->
-<!--                                 <button type="submit" class="mt-1 px-3 py-1 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-xs">Купи</button>-->
-<!--                                 </form>-->
-<!--                                 </div>-->
-<!--                                 <div th:unless="${product.availableQuantity > 0}">-->
-<!--                                 <span class="mt-1 px-3 py-1 text-xs text-gray-500 rounded-full border border-gray-400">Изчерпан</span>-->
-<!--                                 </div>-->
+                                <!--                                 <div th:if="${product.availableQuantity > 0}">-->
+                                <!--                                 <form th:action="@{/shopping-cart/add/{id}(id=${product.id})}" method="post">-->
+                                <!--                                 <button type="submit" class="mt-1 px-3 py-1 bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-colors text-xs">Купи</button>-->
+                                <!--                                 </form>-->
+                                <!--                                 </div>-->
+                                <!--                                 <div th:unless="${product.availableQuantity > 0}">-->
+                                <!--                                 <span class="mt-1 px-3 py-1 text-xs text-gray-500 rounded-full border border-gray-400">Изчерпан</span>-->
+                                <!--                                 </div>-->
                             </div>
                         </div>
                     </div>
